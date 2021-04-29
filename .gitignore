@@ -5,3 +5,10 @@ cat .gitignore
 /SECRET_VOLDEMORT_SERVER/Debug
 /SECRET_VOLDEMORT_SERVER/Developpement/SECRET_HITLER_SERVEUR.pro.user
 *.o
+*.cpp
+*.h
+*.qmake.stash
+Makefile
+*.Debug
+*.Release
+*.rc
