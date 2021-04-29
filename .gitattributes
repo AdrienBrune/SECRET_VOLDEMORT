@@ -1,3 +1,1 @@
-SECRET_VOLDEMORT_GAME/Release_windows/release/qrc_res.cpp filter=lfs diff=lfs merge=lfs -text
-SECRET_VOLDEMORT_GAME/Release_macOS/qrc_res.cpp filter=lfs diff=lfs merge=lfs -text
 SECRET_VOLDEMORT_GAME/Release_macOS/SECRET_VOLDEMORT_GAME.app filter=lfs diff=lfs merge=lfs -text
