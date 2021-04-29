@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Controller</class>
+ <widget class="QMainWindow" name="Controller">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1300</width>
+    <height>650</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Secret Voldemort</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <layout class="QHBoxLayout" name="layout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionSounds"/>
+   <addaction name="actionNotifications"/>
+   <addaction name="actionActivateMusic"/>
+  </widget>
+  <action name="actionSounds">
+   <property name="icon">
+    <iconset resource="ressources/res.qrc">
+     <normaloff>:/icons/sound_on.png</normaloff>:/icons/sound_on.png</iconset>
+   </property>
+   <property name="text">
+    <string>autoriser les effets sonores</string>
+   </property>
+   <property name="toolTip">
+    <string>autoriser les effets sonores</string>
+   </property>
+  </action>
+  <action name="actionNotifications">
+   <property name="icon">
+    <iconset resource="ressources/res.qrc">
+     <normaloff>:/icons/notification_on.png</normaloff>:/icons/notification_on.png</iconset>
+   </property>
+   <property name="text">
+    <string>autoriser les notifications</string>
+   </property>
+   <property name="toolTip">
+    <string>autoriser les notifications</string>
+   </property>
+  </action>
+  <action name="actionActivateMusic">
+   <property name="icon">
+    <iconset resource="ressources/res.qrc">
+     <normaloff>:/icons/music_on.png</normaloff>:/icons/music_on.png</iconset>
+   </property>
+   <property name="text">
+    <string>activer la musique</string>
+   </property>
+   <property name="toolTip">
+    <string>activer la musique</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="ressources/res.qrc"/>
+ </resources>
+ <connections/>
+</ui>
