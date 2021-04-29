@@ -1,14 +1,21 @@
 cat .gitignore
 
-/SECRET_VOLDEMORT_GAME/Debug
-/SECRET_VOLDEMORT_GAME/Developpement/SECRET_VOLDEMORT_GAME.pro.user
-/SECRET_VOLDEMORT_SERVER/Debug
-/SECRET_VOLDEMORT_SERVER/Developpement/SECRET_HITLER_SERVEUR.pro.user
+**/Release_windows/*.cpp
+**/Release_macOS/*.cpp
+**/Release_windows/*.h
+**/Release_macOS/*.h
+
+**/Release_windows/release/*.cpp
+**/Release_macOS/release/*.cpp
+
+SECRET_HITLER_SERVEUR.pro.user
+SECRET_VOLDEMORT_GAME.pro.user
 *.o
-*.cpp
-*.h
 *.qmake.stash
+releaseMakefile
 Makefile
+Debug
 *.Debug
 *.Release
 *.rc
+*.qm
