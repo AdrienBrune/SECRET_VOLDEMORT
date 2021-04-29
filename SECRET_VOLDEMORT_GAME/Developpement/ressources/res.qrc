@@ -1,0 +1,87 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>background.png</file>
+        <file>background_motif.png</file>
+        <file>border_bot.png</file>
+        <file>border_left.png</file>
+        <file>border_right.png</file>
+        <file>border_top.png</file>
+        <file>custom_cursor.png</file>
+        <file>end_screen_fasciste_won.png</file>
+        <file>end_screen_hitler_elu.png</file>
+        <file>end_screen_hitler_killed.png</file>
+        <file>end_screen_liberaux_won.png</file>
+        <file>lock.png</file>
+        <file>lock_2.png</file>
+        <file>lock_3.png</file>
+        <file>player_kill.png</file>
+        <file>player_see.png</file>
+        <file>player_select.png</file>
+        <file>power_foreseen.png</file>
+        <file>power_kill.png</file>
+        <file>power_kill_v.png</file>
+        <file>power_pile.png</file>
+        <file>power_select.png</file>
+        <file>unlock.png</file>
+        <file>vote_ok.png</file>
+        <file>Secret_Role.png</file>
+        <file>Secret_Voldemort_Cover.png</file>
+        <file>Allegeance_Mangemort.png</file>
+        <file>Allegeance_OrdrePhenix.png</file>
+        <file>Beatrix.png</file>
+        <file>Chevalet_Directeur.png</file>
+        <file>Chevalet_Ministre.png</file>
+        <file>Drago.png</file>
+        <file>Lucius.png</file>
+        <file>Plateau_Mangemort_56.png</file>
+        <file>Plateau_Mangemort_78.png</file>
+        <file>Plateau_Mangemort_910.png</file>
+        <file>Plateau_Phenix.png</file>
+        <file>Role_Albus.png</file>
+        <file>Role_Beatrix.png</file>
+        <file>Role_Drago.png</file>
+        <file>Role_Harry.png</file>
+        <file>Role_Hermione.png</file>
+        <file>Role_Lucius.png</file>
+        <file>Role_Neville.png</file>
+        <file>Role_Ron.png</file>
+        <file>Role_Sirius.png</file>
+        <file>Role_Voldemort.png</file>
+        <file>Tuile.png</file>
+        <file>Tuile_Mangemort.png</file>
+        <file>Tuile_Phenix.png</file>
+        <file>Voldemort.png</file>
+        <file>Vote_Lumos.png</file>
+        <file>Vote_Nox.png</file>
+        <file>button_menu.png</file>
+        <file>button_menu_h.png</file>
+        <file>button_menu_p.png</file>
+    </qresource>
+    <qresource prefix="/sounds">
+        <file>sound_pioche.wav</file>
+        <file>sound_put_card.wav</file>
+        <file>sound_selection.wav</file>
+        <file>sound_shot.wav</file>
+        <file>sound_unlock.wav</file>
+        <file>sound_vote.wav</file>
+        <file>sound_winner.wav</file>
+        <file>sound_ready.wav</file>
+    </qresource>
+    <qresource prefix="/fonts">
+        <file>HyliaSerif.ttf</file>
+        <file>OLDGATEL.TTF</file>
+        <file>BELL.TTF</file>
+        <file>Germania.ttf</file>
+    </qresource>
+    <qresource prefix="/icons">
+        <file>notification_off.png</file>
+        <file>notification_on.png</file>
+        <file>sound_off.png</file>
+        <file>sound_on.png</file>
+        <file>music_off.png</file>
+        <file>music_on.png</file>
+    </qresource>
+    <qresource prefix="/musics">
+        <file>music_waitingGame.mp3</file>
+    </qresource>
+</RCC>
