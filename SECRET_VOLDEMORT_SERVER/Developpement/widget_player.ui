@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Widget_Player</class>
+ <widget class="QWidget" name="Widget_Player">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>200</width>
+    <height>200</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>200</width>
+    <height>200</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>200</width>
+    <height>200</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="edit_name">
+       <property name="font">
+        <font>
+         <family>Sitka</family>
+         <pointsize>14</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Adibou</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="edit_vote">
+       <item>
+        <property name="text">
+         <string>Aucun vote</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Yah</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Nein</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="edit_power">
+       <item>
+        <property name="text">
+         <string>Aucun pouvoir</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>check pile</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>check role</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Choix du Président</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Execution</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Vote d'execution</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="edit_electionRole">
+       <item>
+        <property name="text">
+         <string>Non assigné</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Président</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>vice Président</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Chancelier</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>vice Chancelier</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="edit_role">
+       <item>
+        <property name="text">
+         <string>Non assigné</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Libéral</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Faciste</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Hitler</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLabel" name="label_5">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <family>Modern</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>id : </string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="edit_id">
+         <property name="font">
+          <font>
+           <family>Modern</family>
+           <pointsize>10</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>0</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="edit_socket">
+         <property name="font">
+          <font>
+           <family>Modern</family>
+           <pointsize>10</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>0xFFE215</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

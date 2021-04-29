@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>background.png</file>
+        <file>background_pioche.png</file>
+        <file>card_nein.png</file>
+        <file>card_yah.png</file>
+        <file>fasciste_card.png</file>
+        <file>liberal_card.png</file>
+        <file>plateau_F_1.png</file>
+        <file>plateau_F_2.png</file>
+        <file>plateau_F_3.png</file>
+        <file>plateau_L.png</file>
+        <file>vote_ok.png</file>
+        <file>welcome_image.png</file>
+        <file>power_foreseen.png</file>
+        <file>power_kill.png</file>
+        <file>power_kill_v.png</file>
+        <file>power_pile.png</file>
+        <file>power_select.png</file>
+    </qresource>
+</RCC>
