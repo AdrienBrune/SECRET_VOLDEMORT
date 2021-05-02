@@ -26,6 +26,7 @@ Video rules : https://www.youtube.com/watch?v=mbGXIDYdtas&ab_channel=TheRulesGir
 ## Preview
 <img src="./Preview/img1.png" alt="Logo" width="800" height="400">
 <img src="./Preview/img2.png" alt="Logo" width="800" height="400">
+<img src="./Preview/img3.png" alt="Logo" width="800" height="400">
 <img src="./Preview/img4.png" alt="Logo" width="800" height="400">
 <img src="./Preview/img5.png" alt="Logo" width="800" height="400">
 
