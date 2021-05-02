@@ -7,10 +7,6 @@
         <file>border_right.png</file>
         <file>border_top.png</file>
         <file>custom_cursor.png</file>
-        <file>end_screen_fasciste_won.png</file>
-        <file>end_screen_hitler_elu.png</file>
-        <file>end_screen_hitler_killed.png</file>
-        <file>end_screen_liberaux_won.png</file>
         <file>lock.png</file>
         <file>lock_2.png</file>
         <file>lock_3.png</file>
@@ -56,16 +52,20 @@
         <file>button_menu.png</file>
         <file>button_menu_h.png</file>
         <file>button_menu_p.png</file>
+        <file>end_screen_deatheaters_won.png</file>
+        <file>end_screen_phenixorder_won.png</file>
+        <file>end_screen_voldemort_elu.png</file>
+        <file>end_screen_voldemort_killed.png</file>
     </qresource>
     <qresource prefix="/sounds">
         <file>sound_pioche.wav</file>
         <file>sound_put_card.wav</file>
         <file>sound_selection.wav</file>
-        <file>sound_shot.wav</file>
         <file>sound_unlock.wav</file>
         <file>sound_vote.wav</file>
         <file>sound_winner.wav</file>
         <file>sound_ready.wav</file>
+        <file>sound_kill.mp3</file>
     </qresource>
     <qresource prefix="/fonts">
         <file>HyliaSerif.ttf</file>

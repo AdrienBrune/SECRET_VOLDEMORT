@@ -41,41 +41,72 @@ void Widget_Player::paintEvent(QPaintEvent*)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-/*
-    if(mMSG->gameStatus.players[mIdentifier].status == E_PLAYER_STATUS::notPlaying)
-        return;
-*/
+#define PEN_WIDTH   4
 
-    // Black pen.
-    QPen penBlack(QBrush(QColor(0x2E,0x2E,0x2E)), 1);
+    // Focus pen.
+    QPen penFocus(QColor(255, 222, 92), PEN_WIDTH);
 
-    // Grey brush.
-    QBrush brushGrey(QColor(0x57,0x57,0x57));
+    // Minister brush.
+    QBrush brushMinister(QColor(220, 220, 220));
+    // Minister Pen.
+    QPen penMinister(QColor(160, 120, 70), PEN_WIDTH);
 
-    // White brush.
-    QBrush brushWhite(QColor(0xFF,0xFF,0xFF));
+    // Director brush.
+    QBrush brushDirector(QColor(115, 115, 115));
+    // Director pen.
+    QPen penDirector(QColor(50, 50, 50), PEN_WIDTH);
 
-    // Black brush.
-    QBrush brushBlack(QColor(0x00,0x00,0x00));
+    // Player brush.
+    QBrush brushPlayer(QColor(0, 80, 60));
+    // Player pen.
+    QPen penPlayer(QColor(10, 120, 80), PEN_WIDTH);
 
-    // Dark red brush.
-    QBrush brushDarkRed(QColor(0x88,0x00,0x00));
 
-    // Dark green brush.
-    QBrush brushDarkGreen(QColor(0x00,0x88,0x66));
+    // Voldemort brush.
+    QBrush brushVoldemort(QColor(28, 63, 56));
+    // Voldemort pen.
+    QPen penVoldemort(QColor(70, 130, 115), PEN_WIDTH);
+
+    // Death eater brush.
+    QBrush brushDeathEater(QColor(89, 53, 119));
+    // Death eater pen.
+    QPen penDeathEater(QColor(112, 74, 137), PEN_WIDTH);
+
+    // Phenix order brush.
+    QBrush brushPhenixOrder(QColor(143, 20, 31));
+    // Phenix order pen.
+    QPen penPhenixOrder(QColor(153, 64, 55), PEN_WIDTH);
+
+
+    // Unconnected player brush.
+    QBrush brushUnconnected(QColor(71, 48, 45));
+    // Unconnected player pen.
+    QPen penUnconnected(QColor(98, 68, 65), PEN_WIDTH);
+
+    // Minister brush.
+    QBrush brushDead(QColor(30, 30, 30));
+    // Minister Pen.
+    QPen penDead(QColor(60, 60, 60), PEN_WIDTH);
+
+
+    // White text pen.
+    QPen penWhite(QColor(220, 220, 220), PEN_WIDTH);
+    // Black text pen.
+    QPen penBlack(QColor(40, 40, 40), PEN_WIDTH);
+
 
     // Get box size.
     QRect box;
     // Dead player is not focusable
     if(mMSG->gameStatus.players[mIdentifier].status == E_PLAYER_STATUS::alive)
     {
-        // Identifie Chancelor vote stage or other selection stage.
-        if(mMSG->command == CMD_TO_PLAYER_ELECT_CHANCELOR)
+        // Identify Director vote stage or other selection stage.
+        if(mMSG->command == CMD_TO_PLAYER_ELECT_DIRECTOR)
         {
             // Check to grow the box while hover.
             if(mHover && mPlayerClickable && mMSG->identifier != mIdentifier)
             {
-                // Do not grow the box if the player focus is a former President/Chancelor.
+                // Do not grow the box if the player focus is a former Minister/Director.
                 if(mMSG->gameStatus.players[mIdentifier].electionRole == E_ELECTION_ROLE::viceDirector
                     || mMSG->gameStatus.players[mIdentifier].electionRole == E_ELECTION_ROLE::viceMinister)
                 {
@@ -116,51 +147,50 @@ void Widget_Player::paintEvent(QPaintEvent*)
     // Out of game boxes behaviour.
     if(mMSG->gameStatus.endGame != E_END_GAME::notFinished)
     {
-        QBrush brushFaciste(QColor(0xCA,0x00,0x00));
-        QBrush brushLiberal(QColor(0x25,0x5B,0xCA));
-        QBrush brushHitler(QColor(0x00,0x00,0x00));
-        QBrush brushNotAssigned(QColor(0xB6,0xB6,0xB6));
-
         // draw box and texts.
         painter.setOpacity(0.8);
-        painter.setPen(penBlack);
+        painter.setPen(penWhite);
         switch(mMSG->gameStatus.players[mIdentifier].role)
         {
             case E_ROLE::deathEaters:
-                painter.setBrush(brushFaciste);
+                painter.setBrush(brushDeathEater);
+                painter.setPen(penDeathEater);
                 painter.drawRect(box);
                 // draw text.
                 painter.setOpacity(1);
                 painter.setFont(QFont("Germania", 16));
                 painter.drawText(labelName, Qt::AlignCenter, mMSG->gameStatus.players[mIdentifier].name);
                 painter.setFont(QFont("Times New Roman", 8));
-                painter.drawText(labelRole, Qt::AlignCenter, "Faciste");
+                painter.drawText(labelRole, Qt::AlignCenter, "Mangemort");
                 break;
 
             case E_ROLE::phenixOrder:
-                painter.setBrush(brushLiberal);
+                painter.setBrush(brushPhenixOrder);
+                painter.setPen(penPhenixOrder);
                 painter.drawRect(box);
                 // draw text.
                 painter.setOpacity(1);
                 painter.setFont(QFont("Germania", 16));
                 painter.drawText(labelName, Qt::AlignCenter, mMSG->gameStatus.players[mIdentifier].name);
                 painter.setFont(QFont("Times New Roman", 8));
-                painter.drawText(labelRole, Qt::AlignCenter, "Libéral");
+                painter.drawText(labelRole, Qt::AlignCenter, "Ordre du Phénix");
                 break;
 
             case E_ROLE::voldemort:
-                painter.setBrush(brushHitler);
+                painter.setBrush(brushVoldemort);
+                painter.setPen(penVoldemort);
                 painter.drawRect(box);
                 // draw text.
                 painter.setOpacity(1);
                 painter.setFont(QFont("Germania", 16));
                 painter.drawText(labelName, Qt::AlignCenter, mMSG->gameStatus.players[mIdentifier].name);
                 painter.setFont(QFont("Times New Roman", 8));
-                painter.drawText(labelRole, Qt::AlignCenter, "Hitler");
+                painter.drawText(labelRole, Qt::AlignCenter, "Voldemort");
                 break;
 
             case E_ROLE::notAssigned:
-                painter.setBrush(brushDarkGreen);
+                painter.setBrush(brushUnconnected);
+                painter.setPen(penUnconnected);
                 painter.drawRect(box);
                 // draw texts.
                 painter.setOpacity(1);
@@ -185,29 +215,34 @@ void Widget_Player::paintEvent(QPaintEvent*)
             switch(mMSG->gameStatus.players[mIdentifier].electionRole)
             {
                 case E_ELECTION_ROLE::minister:
-                    painter.setBrush(brushWhite);
+                    painter.setBrush(brushMinister);
+                    painter.setPen(penMinister);
                     painter.drawRect(box);
                     break;
 
                 case E_ELECTION_ROLE::director:
-                    painter.setBrush(brushBlack);
+                    painter.setBrush(brushDirector);
+                    painter.setPen(penDirector);
                     painter.drawRect(box);
                     break;
 
                 default:
-                    painter.setBrush(brushGrey);
+                    painter.setBrush(brushPlayer);
+                    painter.setPen(penPlayer);
                     painter.drawRect(box);
                     break;
             }
             break;
 
         case E_PLAYER_STATUS::dead:
-            painter.setBrush(brushDarkRed);
+            painter.setBrush(brushDead);
+            painter.setPen(penDead);
             painter.drawRect(box);
             break;
 
         case E_PLAYER_STATUS::notPlaying:
-            painter.setBrush(brushDarkGreen);
+            painter.setBrush(brushUnconnected);
+            painter.setPen(penUnconnected);
             painter.drawRect(box);
             break;
     }
@@ -217,17 +252,15 @@ void Widget_Player::paintEvent(QPaintEvent*)
     {
         if(mMSG->gameStatus.playerFocus == mIdentifier)
         {
-            painter.setPen(QPen(QBrush(QColor(0xFF,0xB8,0x3C)), 4));
+            painter.setOpacity(1);
             painter.setBrush(QBrush());
+            painter.setPen(penFocus);
             painter.drawRect(box);
-            painter.setPen(penBlack);
         }
     }
 
     // draw texts.
     painter.setOpacity(1);
-    painter.setFont(QFont("Germania", 16));
-    painter.drawText(labelName, Qt::AlignCenter, mMSG->gameStatus.players[mIdentifier].name);
     painter.setFont(QFont("Times New Roman", 8));
     switch(mMSG->gameStatus.players[mIdentifier].status)
     {
@@ -235,34 +268,43 @@ void Widget_Player::paintEvent(QPaintEvent*)
             switch(mMSG->gameStatus.players[mIdentifier].electionRole)
             {
                 case E_ELECTION_ROLE::minister:
-                    painter.drawText(labelRole, Qt::AlignCenter, "Président");
+                    painter.setPen(penMinister);
+                    painter.drawText(labelRole, Qt::AlignCenter, "Ministre de la magie");
                     break;
 
                 case E_ELECTION_ROLE::director:
-                    painter.drawText(labelRole, Qt::AlignCenter, "Chancelier");
+                    painter.setPen(penDirector);
+                    painter.drawText(labelRole, Qt::AlignCenter, "Directeur de Poudlard");
                     break;
 
                 case E_ELECTION_ROLE::viceMinister:
-                    painter.drawText(labelRole, Qt::AlignCenter, "Vice Président");
+                    painter.setPen(penPlayer);
+                    painter.drawText(labelRole, Qt::AlignCenter, "Vice Ministre");
                     break;
 
                 case E_ELECTION_ROLE::viceDirector:
-                    painter.drawText(labelRole, Qt::AlignCenter, "Vice Chancelier");
+                    painter.setPen(penPlayer);
+                    painter.drawText(labelRole, Qt::AlignCenter, "Vice Directeur");
                     break;
 
                 default:
+                    painter.setPen(penPlayer);
                     break;
             }
             break;
 
         case E_PLAYER_STATUS::dead:
+            painter.setPen(penDead);
             painter.drawText(labelRole, Qt::AlignCenter, "Mort");
             break;
 
         case E_PLAYER_STATUS::notPlaying:
+            painter.setPen(penUnconnected);
             painter.drawText(labelRole, Qt::AlignCenter, "En attente");
             break;
     }
+    painter.setFont(QFont("Germania", 16));
+    painter.drawText(labelName, Qt::AlignCenter, mMSG->gameStatus.players[mIdentifier].name);
 
     // draw vote.
 
@@ -271,8 +313,9 @@ void Widget_Player::paintEvent(QPaintEvent*)
         // Player needs to be alive.
         if(mMSG->gameStatus.players[mIdentifier].status == E_PLAYER_STATUS::alive)
         {
-            QBrush brushGreen(QColor(0x7A,0xCB,0x8A));
-            QBrush brushRed(QColor(0xC2,0x33,0x33));
+            QBrush brushGreen(QColor(0x7A, 0xCB, 0x8A));
+            QBrush brushRed(QColor(0xA0, 0x33, 0x33));
+            painter.setPen(QPen());
 
             if(mPlayerVotes[mIdentifier] == E_VOTE::lumos)
                 painter.setBrush(brushGreen);
@@ -293,10 +336,6 @@ void Widget_Player::paintEvent(QPaintEvent*)
         }
     }
 
-    // The Président still have the power while voting.
-    if(mMSG->command == CMD_TO_PLAYER_VOTE_TO_KILL || mMSG->command == CMD_TO_PLAYER_PLAYER_VOTED_TO_KILL)
-        return;
-
     // draw power.
     if(mMSG->gameStatus.players[mMSG->identifier].electionRole == E_ELECTION_ROLE::minister
        && mMSG->gameStatus.players[mIdentifier].status == E_PLAYER_STATUS::alive
@@ -312,7 +351,6 @@ void Widget_Player::paintEvent(QPaintEvent*)
                 break;
 
             case E_POWER::kill:
-            case E_POWER::voteToKill:
                 painter.drawPixmap(QRect(box.x(), box.y(), box.height(), box.height()),
                                    QPixmap(":/images/player_kill.png"));
                 break;
@@ -346,7 +384,7 @@ void Widget_Player::clickOnPlayer()
         }
 
         // In vote stage, some nomination are not allowed.
-        if(mMSG->command == CMD_TO_PLAYER_ELECT_CHANCELOR
+        if(mMSG->command == CMD_TO_PLAYER_ELECT_DIRECTOR
             && (mMSG->gameStatus.players[mIdentifier].electionRole == E_ELECTION_ROLE::viceMinister
                 || mMSG->gameStatus.players[mIdentifier].electionRole == E_ELECTION_ROLE::viceDirector))
         {

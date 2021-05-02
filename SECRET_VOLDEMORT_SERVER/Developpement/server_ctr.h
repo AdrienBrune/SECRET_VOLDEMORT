@@ -46,11 +46,10 @@ private:
     void STATE_putLawOnBoard(S_MESSAGE MSG);
     void STATE_powerNewPresident(S_MESSAGE MSG);
     void STATE_powerKillPlayer(S_MESSAGE MSG);
-    void STATE_powerStartVoteToKill(S_MESSAGE MSG);
-    void STATE_powerKillPlayerVoteResult(S_MESSAGE MSG);
     void STATE_changeName(S_MESSAGE MSG);
     void STATE_playerAskToJoinGame(S_MESSAGE MSG);
     void STATE_threeVoteCanceled();
+    void STATE_sendMinisterVetoReply(S_MESSAGE MSG);
 
 private:
     void initGame();
@@ -59,7 +58,6 @@ private:
     E_VOTE getVoteResult();
     void killPlayer(E_IDENTIFIER identifier);
     void refreshPlayerIdentifier();
-
     void refreshGameStatusDisplay();
     void copyGameStatusDisplayedInto(S_GAME_STATUS* game);
 
@@ -79,7 +77,7 @@ private:
     TCP_API* mTCP_API;
     S_GAME_STATUS mTurnStateSaveMSG;
     QString mMessageLog;
-    quint8 mElectionCancelationCounter;
+    E_IDENTIFIER mSaveLastPresident;
 
     S_GAMEBOARD_DISPLAYER mBoardStatusDisplay;
 

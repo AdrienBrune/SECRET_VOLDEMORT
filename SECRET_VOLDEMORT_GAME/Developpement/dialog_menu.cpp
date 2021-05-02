@@ -6,7 +6,7 @@ Dialog_Menu::Dialog_Menu(QWidget *parent) :
     QDialog(parent),
     mPort(DEFAULT_PORT),
     mIp(DEFAULT_IP),
-    mName("1"),
+    mName(""),
     ui(new Ui::Menu)
 {
     ui->setupUi(this);

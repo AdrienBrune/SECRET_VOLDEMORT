@@ -7,7 +7,7 @@ Server_CTR::Server_CTR(QWidget *parent):
     mPlayerFocus(E_IDENTIFIER::ID_none),
     mTCP_API(nullptr),
     mTurnStateSaveMSG(S_GAME_STATUS()),
-    mElectionCancelationCounter(0),
+    mSaveLastPresident(E_IDENTIFIER::ID_none),
     mBoardStatusDisplay(S_GAMEBOARD_DISPLAYER()),
     ui(new Ui::Server_CTR)
 {
@@ -30,7 +30,9 @@ Server_CTR::Server_CTR(QWidget *parent):
     for(int i = 0; i < 6; i++)
     {
         mGame.board.boardPower[i] = E_POWER::noPower;
-    }
+    }  
+    generateNewPile(&mGame.pile);
+    mGame.vetoPower = false;
 }
 
 Server_CTR::~Server_CTR()
@@ -42,6 +44,16 @@ Server_CTR::~Server_CTR()
 void Server_CTR::gameState(S_MESSAGE MSG)
 {
     refreshPlayerStatus(MSG);
+
+    // Shuffle pile if necessary.
+    qDebug() << "pile size : " << mGame.pile.size();
+    if(mGame.pile.size() <= 3)
+    {
+        generateNewPile(&mGame.pile);
+        qDebug() << "shuffle : " << mGame.pile.size();
+    }
+
+    printGame(mGame);
 
     // State machine
     switch(MSG.command)
@@ -78,12 +90,13 @@ void Server_CTR::gameState(S_MESSAGE MSG)
             STATE_powerKillPlayer(MSG);
             break;
 
-        case CMD_TO_SERVER_START_VOTE_TO_KILL:
-            STATE_powerStartVoteToKill(MSG);
+        case CMD_TO_SERVER_DIRECTOR_ASKED_VETO:
+            mTCP_API->setCommand(CMD_TO_PLAYER_ASK_MINISTER_TO_VETO);
+            mTCP_API->send_MSG(mGame);
             break;
 
-        case CMD_TO_SERVER_PLAYER_VOTED_TO_KILL:
-            STATE_powerKillPlayerVoteResult(MSG);
+        case CMD_TO_SERVER_MINISTER_VETO_REPLY:
+            STATE_sendMinisterVetoReply(MSG);
             break;
 
         case CMD_TO_SERVER_CHANGE_NAME:
@@ -92,6 +105,7 @@ void Server_CTR::gameState(S_MESSAGE MSG)
 
         case CMD_TO_SERVER_JOIN_GAME:
             STATE_playerAskToJoinGame(MSG);
+            mTurnStateSaveMSG.players = mGame.players;
             break;
 
         default:
@@ -113,8 +127,30 @@ void Server_CTR::STATE_startTurn()
         mGame.players[i].power = E_POWER::noPower;
     }
 
-    setNextPresident(&mGame);
-    setChancelor(&mGame, E_IDENTIFIER::ID_none);
+    if(mSaveLastPresident != E_IDENTIFIER::ID_none)
+    {
+        // Last turn was a special turn.
+        E_IDENTIFIER specialPresident = E_IDENTIFIER::ID_none;
+        for(int i = 0; i < mGame.players.size(); i++)
+        {
+            if(mGame.players[i].electionRole == E_ELECTION_ROLE::president)
+            {
+                specialPresident = static_cast<E_IDENTIFIER>(i);
+                break;
+            }
+        }
+
+        setNextPresidentAfterSpecialTurn(mSaveLastPresident, specialPresident, &mGame);
+
+        setChancelor(&mGame, E_IDENTIFIER::ID_none);
+        mSaveLastPresident = E_IDENTIFIER::ID_none;
+    }
+    else
+    {
+        // Last turn was a normal turn.
+        setNextPresident(&mGame);
+        setChancelor(&mGame, E_IDENTIFIER::ID_none);
+    }
 
     mTCP_API->setCommand(CMD_TO_PLAYER_ELECT_CHANCELOR);
     mTCP_API->send_MSG(mGame);
@@ -138,15 +174,13 @@ void Server_CTR::STATE_startChancelorVote(S_MESSAGE MSG)
 
 void Server_CTR::STATE_chancelorVoteResult(S_MESSAGE MSG)
 {
-qDebug() << "in";
     if(addPlayerVote(MSG.identifier))
-    {qDebug() << "2";
+    {
         onPrint("Totalité des votes collectés");
         // Everyone voted.
         switch(getVoteResult())
         {
             case E_VOTE::yah:
-                mElectionCancelationCounter = 0;
                 if(mGame.players[mGame.playerFocus].role == E_ROLE::hitler && mGame.board.boardFaciste >= 3)
                 {
                     onPrint("Fin de la partie : Hitler élu Chancelier");
@@ -156,6 +190,7 @@ qDebug() << "in";
                 }
                 else
                 {
+                    // Set the cahncelor.
                     setChancelor(&mGame, mGame.playerFocus);
                     mTCP_API->setCommand(CMD_TO_PLAYER_PRESIDENT_DRAW);
                     QTimer::singleShot(2000, this, [&](){ mTCP_API->send_MSG(mGame); });
@@ -163,11 +198,10 @@ qDebug() << "in";
                 break;
 
             case E_VOTE::nein:
-                // The rule says that after three cancelations, a facist law is put on board.
-                if(++mElectionCancelationCounter >= 3)
+                // The rule says that after three cancelations, the top card of the pile is put on board.
+                if(++mGame.electionTracker >= 3)
                 {
-                    mElectionCancelationCounter = 0;
-                    STATE_threeVoteCanceled();
+                    STATE_putLawOnBoard(MSG);
                 }
                 else
                 {
@@ -179,7 +213,7 @@ qDebug() << "in";
                 onPrint("erreur, le résultat d'un vote ne devrait pas être différent de yah ou nein");
                 break;
         }
-qDebug() << "out";
+
         // Remove player votes and focus.
         mGame.playerFocus = E_IDENTIFIER::ID_none;
         for(int i = 0; i < mGame.players.size(); i++)
@@ -221,11 +255,29 @@ void Server_CTR::STATE_putLawOnBoard(S_MESSAGE)
             mGame.board.boardFaciste++;
             // Check for power.
             mGame.players[getPresidentIdentifier(mGame)].power = mGame.board.boardPower[mGame.board.boardFaciste - 1];
+            if(mGame.board.boardPower[mGame.board.boardFaciste - 1] == E_POWER::choosePresident)
+            {
+                mSaveLastPresident = getPresidentIdentifier(mGame);
+            }
+            // If power check pile enable, shuffle pile if its size is inferior to 3 cards.
+            if(mGame.board.boardPower[mGame.board.boardFaciste - 1] == E_POWER::checkPile)
+            {
+                if(mGame.pile.size() <= 3)
+                {
+                    generateNewPile(&mGame.pile);
+                }
+            }
             break;
 
         case E_CARD::liberalLaw:
             mGame.board.boardLiberal++;
             break;
+    }
+
+    // Check to enable veto power.
+    if(mGame.board.boardFaciste >= 5)
+    {
+        mGame.vetoPower = true;
     }
 
     // Check if 6 faciste laws have been put on board.
@@ -249,6 +301,9 @@ void Server_CTR::STATE_putLawOnBoard(S_MESSAGE)
 
     mTCP_API->setCommand(CMD_TO_PLAYER_PUT_LAW_ON_BOARD);
     mTCP_API->send_MSG(mGame);
+
+    // Reset election tracker.
+    mGame.electionTracker = 0;
 }
 
 void Server_CTR::STATE_powerNewPresident(S_MESSAGE MSG)
@@ -290,62 +345,6 @@ void Server_CTR::STATE_powerKillPlayer(S_MESSAGE MSG)
     STATE_startTurn();
 }
 
-void Server_CTR::STATE_powerStartVoteToKill(S_MESSAGE MSG)
-{
-    onPrint("Pouvoir vote pour executer un joueur a commencé");
-
-    mGame.playerFocus = MSG.gameStatus.playerFocus;
-    mTCP_API->setCommand(CMD_TO_PLAYER_VOTE_TO_KILL);
-    mTCP_API->send_MSG(mGame);
-}
-
-void Server_CTR::STATE_powerKillPlayerVoteResult(S_MESSAGE MSG)
-{
-    if(addPlayerVote(MSG.identifier))
-    {
-        onPrint("Pouvoir tous les votes ont été collectés");
-        // Everyone voted.
-        switch(getVoteResult())
-        {
-            case E_VOTE::yah:
-                killPlayer(mGame.playerFocus);
-                if(mGame.players[mGame.playerFocus].role == E_ROLE::hitler)
-                {
-                    onPrint("Fin de la partie : Hitler tué");
-                    killPlayer(static_cast<E_IDENTIFIER>(mGame.playerFocus));
-                    mGame.endGame = E_END_GAME::hitlerKilled;
-                    mTCP_API->setCommand(CMD_TO_PLAYER_END_GAME);
-                    QTimer::singleShot(2000, this, [&](){ mTCP_API->send_MSG(mGame); });
-                }
-                else
-                {
-                    killPlayer(mGame.playerFocus);
-                    QTimer::singleShot(2000, this, SLOT(STATE_startTurn()));
-                }
-                break;
-
-            case E_VOTE::nein:
-                QTimer::singleShot(2000, this, SLOT(STATE_startTurn()));
-                break;
-
-            default:
-                onPrint("erreur, le résultat d'un vote ne devrait pas être différent de yah ou nein");
-                break;
-        }
-
-        // Remove votes and focus.
-        mGame.playerFocus = E_IDENTIFIER::ID_none;
-        for(int i = 0; i < mGame.players.size(); i++)
-        {
-            if(mGame.players[i].vote == E_VOTE::yah || mGame.players[i].vote == E_VOTE::nein)
-            {
-                mGame.players[i].vote = E_VOTE::blank;
-            }
-        }
-        //QTimer::singleShot(5000, this, SLOT(onHidePlayerVotes()));
-    }
-}
-
 void Server_CTR::STATE_changeName(S_MESSAGE MSG)
 {
     mGame.players[MSG.identifier].name = MSG.gameStatus.players[MSG.identifier].name;
@@ -365,6 +364,7 @@ void Server_CTR::STATE_playerAskToJoinGame(S_MESSAGE MSG)
     mGame.players[MSG.identifier].electionRole = E_ELECTION_ROLE::none;
     mGame.players[MSG.identifier].power = E_POWER::noPower;
     mGame.players[MSG.identifier].role = getMissingRole(mGame);
+    mGame.players[MSG.identifier].roleName = getMissingRoleName(MSG.identifier, mGame);
     mGame.players[MSG.identifier].vote = E_VOTE::blank;
 
     // Put player in game.
@@ -394,18 +394,62 @@ void Server_CTR::STATE_threeVoteCanceled()
     QTimer::singleShot(2000, [&](){ mTCP_API->send_MSG(mGame); });
 }
 
+void Server_CTR::STATE_sendMinisterVetoReply(S_MESSAGE MSG)
+{
+    if(MSG.garbage == 1)
+    {
+        // Minister accepted.
+
+        // Remove the two cards drawn by Director.
+        mGame.pile.removeLast();
+        mGame.pile.removeLast();
+
+        if(++mGame.electionTracker >= 3)
+        {
+            STATE_putLawOnBoard(MSG);
+        }
+        else
+        {
+            STATE_startTurn();
+        }
+        return;
+    }
+    else
+    {
+        // Minister refused.
+        mTCP_API->setCommand(CMD_TO_PLAYER_VETO_RESULT);
+        mTCP_API->send_MSG(mGame);
+    }
+}
+
 void Server_CTR::initGame()
 {
+#ifndef LOG
+    qDebug() << "---------------------------------------";
+    qDebug() << "         DEBUT INITIALISATION";
+    qDebug() << "---------------------------------------";
+    printGame(mGame);
+#endif
+
     initPlayers(&mGame);
     initRole(&mGame);
     initBoard(&mGame);
-    initPile(&mGame);
+    generateNewPile(&mGame.pile);
     mGame.endGame = E_END_GAME::notFinished;
     mGame.playerFocus = E_IDENTIFIER::ID_none;
+    mGame.electionTracker = 0;
+    mGame.vetoPower = false;
 
     // clean log.
     mMessageLog = "";
     refreshGameStatusDisplay();
+
+#ifndef LOG
+    printGame(mGame);
+    qDebug() << "---------------------------------------";
+    qDebug() << "       INITIALISATION TERMINEE";
+    qDebug() << "---------------------------------------";
+#endif
 }
 
 void Server_CTR::refreshPlayerStatus(S_MESSAGE MSG)
@@ -413,6 +457,7 @@ void Server_CTR::refreshPlayerStatus(S_MESSAGE MSG)
     if(MSG.command == CMD_TO_SERVER_JOIN_GAME)
         return;
 
+    // Get and set new game status from sender.
     for(int i = 0; i < mGame.players.size(); i++)
     {
         if(mGame.players[i].identifier == MSG.identifier)
@@ -433,17 +478,8 @@ bool Server_CTR::addPlayerVote(E_IDENTIFIER identifier)
     {
         if(player.identifier == identifier)
         {
-            qDebug() << "n" << player.identifier;
-            if(mGame.players[getPresidentIdentifier(mGame)].power == E_POWER::voteToKill)
-            {
-                mTCP_API->setCommand(CMD_TO_PLAYER_PLAYER_VOTED_TO_KILL);
-                mTCP_API->send_MSG(mGame);
-            }
-            else
-            {
-                mTCP_API->setCommand(CMD_TO_PLAYER_PLAYER_VOTED);
-                mTCP_API->send_MSG(mGame);
-            }
+            mTCP_API->setCommand(CMD_TO_PLAYER_PLAYER_VOTED);
+            mTCP_API->send_MSG(mGame);
         }
     }
 
@@ -455,24 +491,23 @@ bool Server_CTR::addPlayerVote(E_IDENTIFIER identifier)
             return false;
         }
     }
-qDebug() << "cheh4";
     return true;
 }
 
 E_VOTE Server_CTR::getVoteResult()
 {
-    quint8 yah = 0, nein = 0;
+    quint8 lumos = 0, nox = 0;
 
     for(const S_PLAYER &player : mGame.players)
     {
         if(player.vote == E_VOTE::yah)
         {
-            yah++;
+            lumos++;
             continue;
         }
         if(player.vote == E_VOTE::nein)
         {
-            nein++;
+            nox++;
             continue;
         }
 
@@ -483,7 +518,7 @@ E_VOTE Server_CTR::getVoteResult()
         }
     }
 
-    if(yah >= nein)
+    if(lumos > nox)
     {
         return E_VOTE::yah;
     }
@@ -637,6 +672,7 @@ void Server_CTR::onAddPlayer(QTcpSocket* socket)
     }
 
     mGame.players.append(player);
+    mTurnStateSaveMSG.players = mGame.players;
 
     onPrint("nouveau joueur dans la partie");
 
@@ -723,10 +759,11 @@ void Server_CTR::on_buttonRestartTurn_clicked()
 
     // Remove potential player focus.
     mGame.playerFocus = E_IDENTIFIER::ID_none;
-    // Remove potentiel power.
+    // Remove potentiel power/vote.
     for(int i = 0; i < mGame.players.size(); i++)
     {
         mGame.players[i].power = E_POWER::noPower;
+        mGame.players[i].vote = E_VOTE::blank;
     }
     // Remove player Chancelor status.
     for(int i = 0; i < mGame.players.size(); i++)
@@ -736,6 +773,16 @@ void Server_CTR::on_buttonRestartTurn_clicked()
             mGame.players[i].electionRole = E_ELECTION_ROLE::none;
         }
     }
+
+    bool MinisterFound = false;
+    for(const S_PLAYER & player : mGame.players)
+    {
+        if(player.electionRole == E_ELECTION_ROLE::president)
+            MinisterFound = true;
+    }
+
+    if(MinisterFound == false)
+        mGame.players[0].electionRole = E_ELECTION_ROLE::president;
 
     refreshGameStatusDisplay();
 
@@ -764,8 +811,6 @@ void Server_CTR::on_buttonStartTurnWithInputs_clicked()
     }
 
     refreshGameStatusDisplay();
-
-    qDebug() << mGame;
 
     mTCP_API->setCommand(CMD_TO_PLAYER_ELECT_CHANCELOR);
     mTCP_API->send_MSG(mGame);

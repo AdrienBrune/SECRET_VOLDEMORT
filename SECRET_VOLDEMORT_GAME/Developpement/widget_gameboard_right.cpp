@@ -171,6 +171,9 @@ void Widget_Gameboard_Right::paintEvent(QPaintEvent*)
     if(mMSG->gameStatus.endGame != E_END_GAME::notFinished)
         return;
 
+    if(mMSG->gameStatus.players[mMSG->identifier].status == E_PLAYER_STATUS::notPlaying)
+        return;
+
     // Draw Role card (ratio 1.5).
 
     QRect roleArea, roleAreaReduced;

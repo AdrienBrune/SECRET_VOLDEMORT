@@ -3,8 +3,8 @@
 
 static QString states[] = {
     "Partie en attente",
-    "Election du chancelier",
-    "Vote pour le chancelier",
+    "Election du Directeur",
+    "Vote pour le Directeur",
     "Vote d'une loi en cours",
     "Pouvoir en cours",
 };
@@ -27,18 +27,17 @@ int Widget_GameState::getIndexTextFromCommand(int command)
     switch(command)
     {
         case CMD_TO_PLAYER_START_GAME:
-        case CMD_TO_PLAYER_ELECT_CHANCELOR:
+        case CMD_TO_PLAYER_ELECT_DIRECTOR:
             return 1;
         case CMD_TO_PLAYER_START_VOTE:
         case CMD_TO_PLAYER_PLAYER_VOTED:
             return 2;
 
-        case CMD_TO_PLAYER_PRESIDENT_DRAW:
-        case CMD_TO_PLAYER_CHANCELOR_DISCARD:
+        case CMD_TO_PLAYER_MINISTER_DRAW:
+        case CMD_TO_PLAYER_DIRECTOR_DISCARD:
             return 3;
 
         case CMD_TO_PLAYER_PUT_LAW_ON_BOARD:
-        case CMD_TO_PLAYER_VOTE_TO_KILL:
         case CMD_TO_PLAYER_INIT_COMMUNICATION:
             return 4;
 

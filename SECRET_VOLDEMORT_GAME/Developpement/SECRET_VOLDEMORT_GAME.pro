@@ -10,6 +10,7 @@ CONFIG += c++11
 
 SOURCES += \
     dialog_menu.cpp \
+    dialog_question.cpp \
     main.cpp \
     controller.cpp \
     soundmanager.cpp \
@@ -36,6 +37,7 @@ HEADERS += \
     controller.h \
     data.h \
     dialog_menu.h \
+    dialog_question.h \
     soundmanager.h \
     tcp_api.h \
     widget_boarddeatheaters.h \
@@ -64,6 +66,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 FORMS += \
     controller.ui \
     dialog_menu.ui \
+    dialog_question.ui \
     widget_boarddeatheaters.ui \
     widget_boardphenixorder.ui \
     widget_gameboard.ui \

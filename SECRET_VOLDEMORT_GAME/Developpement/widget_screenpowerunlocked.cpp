@@ -88,10 +88,6 @@ void Widget_ScreenPowerUnlocked::paintEvent(QPaintEvent*)
                 styleSheet =  ":/images/power_select.png";
                 break;
 
-            case E_POWER::voteToKill:
-                styleSheet = ":/images/power_kill.png";
-                break;
-
             default:
                 qDebug() << "erreur pouvoir non reconnu";
                 break;

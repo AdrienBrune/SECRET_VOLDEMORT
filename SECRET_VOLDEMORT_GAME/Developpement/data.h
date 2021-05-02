@@ -10,48 +10,48 @@ extern QString g_RoleNames[];
 // States.
 
 #define STATE_GAME_NOT_STARTED          0
-#define STATE_WAIT_CHANCELOR_NOMINATION 1
-#define STATE_CHANCELOR_SELECTION       2
-#define STATE_VOTE_CHANCELOR            3
+#define STATE_WAIT_DIRECTOR_NOMINATION  1
+#define STATE_DIRECTOR_SELECTION        2
+#define STATE_VOTE_DIRECTOR             3
 #define STATE_GET_VOTE_RESULT           4
-#define STATE_LAW_IS_VOTING_PRESIDENT   5
-#define STATE_PRESIDENT_DRAW            6
-#define STATE_PRESIDENT_DISCARD         7
-#define STATE_LAW_IS_VOTING_CHANCELOR   8
-#define STATE_CHANCELOR_DISCARD         9
+#define STATE_LAW_IS_VOTING_MINISTER    5
+#define STATE_MINISTER_DRAW             6
+#define STATE_MINISTER_DISCARD          7
+#define STATE_LAW_IS_VOTING_DIRECTOR    8
+#define STATE_DIRECTOR_DISCARD          9
 #define STATE_POWER_IN_PROGRESS         10
-#define STATE_POWER_CHECK_PILE          11
-#define STATE_POWER_CHECK_ROLE          12
-#define STATE_POWER_NEW_PRESIDENT       13
-#define STATE_POWER_KILL                14
-#define STATE_START_VOTE_TO_KILL        15
-#define STATE_POWER_CHOOSE_TO_KILL      16
-#define STATE_END_GAME                  17
+#define STATE_PUT_LAW                   11
+#define STATE_POWER_CHECK_PILE          12
+#define STATE_POWER_CHECK_ROLE          13
+#define STATE_POWER_NEW_MINISTER        14
+#define STATE_POWER_KILL                15
+#define STATE_VETO_NEGOCIATION          16
+#define STATE_END_GAME                  18
 
 // Commands.
 
 #define CMD_TO_PLAYER_START_GAME            30
 #define CMD_TO_SERVER_START_NEW_TURN        0
-#define CMD_TO_PLAYER_ELECT_CHANCELOR       1
-#define CMD_TO_SERVER_GIVE_CHANCELOR        2
+#define CMD_TO_PLAYER_ELECT_DIRECTOR        1
+#define CMD_TO_SERVER_GIVE_DIRECTOR         2
 #define CMD_TO_PLAYER_START_VOTE            3
 #define CMD_TO_SERVER_PLAYER_VOTED          4
-#define CMD_TO_PLAYER_PLAYER_VOTED          20
-#define CMD_TO_PLAYER_PLAYER_VOTED_TO_KILL  21
-#define CMD_TO_PLAYER_PRESIDENT_DRAW        5
-#define CMD_TO_SERVER_PRESIDENT_DISCARDED   6
-#define CMD_TO_PLAYER_CHANCELOR_DISCARD     7
-#define CMD_TO_SERVER_CHANCELOR_DISCARDED   8
+#define CMD_TO_PLAYER_PLAYER_VOTED          40
+#define CMD_TO_PLAYER_MINISTER_DRAW         5
+#define CMD_TO_SERVER_MINISTER_DISCARDED    6
+#define CMD_TO_PLAYER_DIRECTOR_DISCARD      7
+#define CMD_TO_SERVER_DIRECTOR_DISCARDED    8
 #define CMD_TO_PLAYER_PUT_LAW_ON_BOARD      9
 #define CMD_TO_SERVER_END_TURN_OK           10
-#define CMD_TO_SERVER_NEW_PRESIDENT         11
+#define CMD_TO_SERVER_NEW_MINISTER          11
 #define CMD_TO_SERVER_KILL_PLAYER           12
-#define CMD_TO_SERVER_START_VOTE_TO_KILL    13
-#define CMD_TO_PLAYER_VOTE_TO_KILL          14
-#define CMD_TO_SERVER_PLAYER_VOTED_TO_KILL  15
 #define CMD_TO_PLAYER_END_GAME              16
 #define CMD_TO_SERVER_CHANGE_NAME           17
 #define CMD_TO_PLAYER_INIT_COMMUNICATION    18
+#define CMD_TO_SERVER_DIRECTOR_ASKED_VETO   19
+#define CMD_TO_PLAYER_ASK_MINISTER_TO_VETO  20
+#define CMD_TO_SERVER_MINISTER_VETO_REPLY   21
+#define CMD_TO_PLAYER_VETO_RESULT           22
 #define CMD_TO_PLAYER_SET_NEW_IDENTIFIER    23
 #define CMD_TO_PLAYER_NEW_CONNECTION        24
 #define CMD_TO_SERVER_JOIN_GAME             25
@@ -136,7 +136,7 @@ typedef enum
 
 typedef enum
 {
-    phenixOrderLAw = 23,
+    phenixOrderLaw = 23,
     deathEatersLaw = 24
 
 }E_CARD;
@@ -156,24 +156,23 @@ typedef enum
     checkRole = 30,
     chooseMinister = 31,
     kill = 32,
-    voteToKill = 33
 
 }E_POWER;
 
 typedef enum
 {
-    notStarted = 34,
-    notFinished = 35,
-    phenixOrderWon = 36,
-    deathEatersWon = 37,
-    voldemortElected = 38,
-    voldemortKilled = 39
+    notStarted = 33,
+    notFinished = 34,
+    phenixOrderWon = 35,
+    deathEatersWon = 36,
+    voldemortElected = 37,
+    voldemortKilled = 38
 
 }E_END_GAME;
 
 typedef enum
 {
-    ID_none = 40,
+    ID_none = 39,
     ID_player1 = 0,
     ID_player2 = 1,
     ID_player3 = 2,
@@ -219,6 +218,8 @@ typedef struct
     E_IDENTIFIER playerFocus;
     S_BOARD board;
     E_END_GAME endGame;
+    quint8 electionTracker;
+    bool vetoPower;
 
 }S_GAME_STATUS;
 
@@ -312,7 +313,7 @@ inline QDataStream & operator<<(QDataStream & stream, const S_GAME_STATUS & MSG)
     QList<quint32> cards;
     S_PLAYER player;
 
-    return stream << MSG.board << MSG.endGame << MSG.pile << MSG.players << MSG.playerFocus;
+    return stream << MSG.board << MSG.endGame << MSG.pile << MSG.players << MSG.playerFocus << MSG.electionTracker << MSG.vetoPower;
 }
 
 inline QDataStream & operator >>(QDataStream & stream, S_GAME_STATUS & MSG)
@@ -339,6 +340,8 @@ inline QDataStream & operator >>(QDataStream & stream, S_GAME_STATUS & MSG)
         MSG.players.append(static_cast<S_PLAYER>(player));
     stream >> tmp;
     MSG.playerFocus = static_cast<E_IDENTIFIER>(tmp);
+    stream >> MSG.electionTracker;
+    stream >> MSG.vetoPower;
 
     return stream;
 }
@@ -421,19 +424,19 @@ inline QDebug operator<<(QDebug debug, const S_PLAYER &player)
             break;
 
         case E_ELECTION_ROLE::minister:
-            election = "Président";
+            election = "Ministre";
             break;
 
         case E_ELECTION_ROLE::director:
-            election = "Chancelier";
+            election = "Directeur";
             break;
 
         case E_ELECTION_ROLE::viceMinister:
-            election = "Vice Président";
+            election = "Vice Ministre";
             break;
 
         case E_ELECTION_ROLE::viceDirector:
-            election = "Vice Chancelier";
+            election = "Vice Directeur";
             break;
     }
 
@@ -448,15 +451,11 @@ inline QDebug operator<<(QDebug debug, const S_PLAYER &player)
             break;
 
         case E_POWER::chooseMinister:
-            power = "Choix Président";
+            power = "Choix Ministre";
             break;
 
         case E_POWER::kill:
             power = "Kill";
-            break;
-
-        case E_POWER::voteToKill:
-            power = "Kill vote";
             break;
 
         case E_POWER::noPower:
@@ -515,10 +514,6 @@ inline QDebug operator<<(QDebug debug, const S_BOARD &board)
                 boardPower += " Kill - ";
                 break;
 
-            case E_POWER::voteToKill:
-                boardPower += " Kill vote - ";
-                break;
-
             case E_POWER::noPower:
                 boardPower += " Vide - ";
                 break;
@@ -557,7 +552,7 @@ inline QDebug operator<<(QDebug debug, const S_GAME_STATUS &game)
                 pile += " F";
                 break;
 
-            case E_CARD::phenixOrderLAw:
+            case E_CARD::phenixOrderLaw:
                 pile += " L";
                 break;
         }

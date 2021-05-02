@@ -9,7 +9,7 @@ Widget_FacistTeam::Widget_FacistTeam(QWidget* parent, S_MESSAGE* MSG):
     QPushButton* buttonExit = new QPushButton(this);
     buttonExit->setMinimumSize(QSize(50, 50));
     buttonExit->setMaximumSize(QSize(50, 50));
-    buttonExit->setText("OK");
+    buttonExit->setText("Ok");
     buttonExit->setStyleSheet("QPushButton{color:rgba(250,250,250,240);;background-color:rgba(0,0,0,60);border:1px solid rgba(250,250,250,50);padding:5px;}"
                               "QPushButton::hover{color:rgba(250,250,250,200);background-color:rgba(0,0,0,80);}");
     connect(buttonExit, SIGNAL(clicked()), this, SIGNAL(sig_hideFacistTeam()));
@@ -28,6 +28,9 @@ void Widget_FacistTeam::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
+
+    if(mMSG->identifier == E_IDENTIFIER::ID_none)
+        return;
 
     // Draw background.
 

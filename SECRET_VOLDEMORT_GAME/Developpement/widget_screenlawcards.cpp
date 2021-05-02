@@ -1,13 +1,14 @@
 #include "widget_screenlawcards.h"
 #include "ui_widget_screenlawcards.h"
 
-Widget_ScreenLawCards::Widget_ScreenLawCards(QWidget* parent, S_MESSAGE* MSG):
+Widget_ScreenLawCards::Widget_ScreenLawCards(QWidget * parent, S_MESSAGE * MSG):
     QWidget(parent),
     mMSG(MSG),
     mHover(-1),
     ui(new Ui::Widget_ScreenLawCards)
 {
     ui->setupUi(this);
+    connect(ui->buttonVetoPower, SIGNAL(clicked()), this, SLOT(onVetoAsked()));
 }
 
 Widget_ScreenLawCards::~Widget_ScreenLawCards()
@@ -15,7 +16,7 @@ Widget_ScreenLawCards::~Widget_ScreenLawCards()
     delete ui;
 }
 
-void Widget_ScreenLawCards::Setup_PresidentDiscard()
+void Widget_ScreenLawCards::Setup_MinisterDiscard()
 {
     initScreen();
 
@@ -28,7 +29,7 @@ void Widget_ScreenLawCards::Setup_PresidentDiscard()
         }
         else
         {
-            law->setLaw(E_CARD::phenixOrderLAw);
+            law->setLaw(E_CARD::phenixOrderLaw);
         }
         law->setStyleSheet("Widget_Card{background-color:rgba(0,0,0,0)}");
 
@@ -41,9 +42,12 @@ void Widget_ScreenLawCards::Setup_PresidentDiscard()
     }
 }
 
-void Widget_ScreenLawCards::Setup_ChancelorDiscard()
+void Widget_ScreenLawCards::Setup_DirectorDiscard()
 {
     initScreen();
+
+    if(mMSG->gameStatus.vetoPower)
+        enableVetoPower(true);
 
     for(int i = 0; i < 2; i++)
     {
@@ -54,7 +58,7 @@ void Widget_ScreenLawCards::Setup_ChancelorDiscard()
         }
         else
         {
-            law->setLaw(E_CARD::phenixOrderLAw);
+            law->setLaw(E_CARD::phenixOrderLaw);
         }
         law->setStyleSheet("Widget_Card{background-color:rgba(0,0,0,0)}");
 
@@ -80,7 +84,7 @@ void Widget_ScreenLawCards::Setup_PowerCheckPile()
         }
         else
         {
-            law->setLaw(E_CARD::phenixOrderLAw);
+            law->setLaw(E_CARD::phenixOrderLaw);
         }
         law->setStyleSheet("Widget_Card{background-color:rgba(0,0,0,0)}");
 
@@ -93,8 +97,20 @@ void Widget_ScreenLawCards::Setup_PowerCheckPile()
     }
 }
 
+void Widget_ScreenLawCards::enableVetoPower(bool toggle)
+{
+    if(!toggle)
+        ui->buttonVetoPower->hide();
+    else
+        ui->buttonVetoPower->show();
+
+    ui->buttonVetoPower->setEnabled(toggle);
+}
+
 void Widget_ScreenLawCards::initScreen()
 {
+    enableVetoPower(false);
+
     while(!mLaws.isEmpty())
         delete mLaws.takeLast();
 }
@@ -106,6 +122,28 @@ void Widget_ScreenLawCards::onCardClicked(int identifier)
         return;
 
     emit sig_lawCardClicked(mMSG->gameStatus.pile.size() - 1 - identifier);
+}
+
+void Widget_ScreenLawCards::onVetoAsked()
+{
+    enableVetoPower(false);
+
+    for(int i = 0; i < mLaws.size(); i++)
+    {
+        disconnect(mLaws[i], &Widget_Card::clicked, this, nullptr);
+    }
+
+    emit sig_vetoAsked();
+}
+
+void Widget_ScreenLawCards::vetoRefused()
+{
+    enableVetoPower(true);
+
+    for(int i = 0; i < mLaws.size(); i++)
+    {
+        connect(mLaws[i], &Widget_Card::clicked, this, [i, this](bool){ this->onCardClicked(i); });
+    }
 }
 
 void Widget_ScreenLawCards::hoverIn(int identifier)
@@ -167,6 +205,5 @@ void Widget_ScreenLawCards::paintEvent(QPaintEvent*)
             painter.drawPixmap(cardArea, QPixmap(imageToLoad));
         }
     }
-
 }
 

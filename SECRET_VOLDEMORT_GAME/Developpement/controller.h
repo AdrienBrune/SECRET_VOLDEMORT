@@ -58,11 +58,13 @@ private slots:
 // ACTION state machine
 private:
     void STATE_gameStarted();
-    void STATE_chancelorNomination();
-    void STATE_chancelorVote();
-    void STATE_presidentAllowToDraw();
-    void STATE_presidentDiscard();
-    void STATE_chancelorDiscard();
+    void STATE_DirectorNomination();
+    void STATE_DirectorVote();
+    void STATE_MinisterAllowToDraw();
+    void STATE_ministerDiscard();
+    void STATE_DirectorDiscard();
+    void STATE_MinisterReplyToVeto();
+    void STATE_forceDirectorToVote();
     void STATE_putLawOnBoard();
     void STATE_powerCheckPile();
     void STATE_powerCheckPlayerRole();
@@ -78,6 +80,7 @@ private slots:
     void EVENT_startUsingPower(E_POWER);
     void EVENT_gameStatusChanged(E_END_GAME);
     void EVENT_playerDie(E_IDENTIFIER);
+    void EVENT_vetoAsked();
 
     void onTimeoutHideVotesReveal();
     void onTimeoutCheckPlayerRole();

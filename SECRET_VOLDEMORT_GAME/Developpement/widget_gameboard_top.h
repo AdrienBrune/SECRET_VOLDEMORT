@@ -19,8 +19,8 @@ public:
 
 private:
     quint8 getIndexMessageCorrespondingToSituation();
-    quint8 getIndexMessagePresident();
-    quint8 getIndexMessageChancelor();
+    quint8 getIndexMessageMinister();
+    quint8 getIndexMessageDirector();
     quint8 getIndexMessageNoRole();
 
 protected:
@@ -28,7 +28,6 @@ protected:
 
 public:
     void updateWidget();
-    void setGameMessage(quint8);
 
 private:
     S_MESSAGE* mMSG;

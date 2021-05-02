@@ -71,8 +71,6 @@ void Widget_PopupMessage::paintEvent(QPaintEvent*)
     QFontMetrics toolMask1(fontMask1);
     QFont fontMask2("Germania", height()/10);
     QFontMetrics toolMask2(fontMask2);
-    QFont fontMask3("Germania", height()/10);
-    QFontMetrics toolMask3(fontMask3);
 
     // Draw first test mask.
     painter.setPen(Qt::black);

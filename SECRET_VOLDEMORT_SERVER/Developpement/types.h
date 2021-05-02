@@ -5,6 +5,9 @@
 #include <QTcpSocket>
 #include <QDataStream>
 #include <stdio.h>
+#include <QDebug>
+
+#define LOG
 
 typedef enum
 {
@@ -71,24 +74,23 @@ typedef enum
     checkRole = 30,
     choosePresident = 31,
     kill = 32,
-    voteToKill = 33
 
 }E_POWER;
 
 typedef enum
 {
-    notStarted = 34,
-    notFinished = 35,
-    liberalWon = 36,
-    facisteWon = 37,
-    hitlerElected = 38,
-    hitlerKilled = 39
+    notStarted = 33,
+    notFinished = 34,
+    liberalWon = 35,
+    facisteWon = 36,
+    hitlerElected = 37,
+    hitlerKilled = 38
 
 }E_END_GAME;
 
 typedef enum
 {
-    ID_none = 40,
+    ID_none = 39,
     ID_player1 = 0,
     ID_player2 = 1,
     ID_player3 = 2,
@@ -204,6 +206,8 @@ typedef struct
     E_IDENTIFIER playerFocus;
     S_BOARD board;
     E_END_GAME endGame;
+    quint8 electionTracker;
+    bool vetoPower;
 
 }S_GAME_STATUS;
 
@@ -212,7 +216,7 @@ inline QDataStream & operator<<(QDataStream & stream, const S_GAME_STATUS & MSG)
     QList<quint32> cards;
     S_PLAYER player;
 
-    return stream << MSG.board << MSG.endGame << MSG.pile << MSG.players << MSG.playerFocus;
+    return stream << MSG.board << MSG.endGame << MSG.pile << MSG.players << MSG.playerFocus << MSG.electionTracker << MSG.vetoPower;
 }
 
 inline QDataStream & operator >>(QDataStream & stream, S_GAME_STATUS & MSG)
@@ -239,6 +243,8 @@ inline QDataStream & operator >>(QDataStream & stream, S_GAME_STATUS & MSG)
         MSG.players.append(static_cast<S_PLAYER>(player));
     stream >> tmp;
     MSG.playerFocus = static_cast<E_IDENTIFIER>(tmp);
+    stream >> MSG.electionTracker;
+    stream >> MSG.vetoPower;
 
     return stream;
 }
@@ -277,8 +283,7 @@ inline QDataStream & operator>>(QDataStream & stream, S_MESSAGE & MSG)
 #define CMD_TO_SERVER_GIVE_CHANCELOR        2
 #define CMD_TO_PLAYER_START_VOTE            3
 #define CMD_TO_SERVER_PLAYER_VOTED          4
-#define CMD_TO_PLAYER_PLAYER_VOTED          20
-#define CMD_TO_PLAYER_PLAYER_VOTED_TO_KILL  21
+#define CMD_TO_PLAYER_PLAYER_VOTED          40
 #define CMD_TO_PLAYER_PRESIDENT_DRAW        5
 #define CMD_TO_SERVER_PRESIDENT_DISCARDED   6
 #define CMD_TO_PLAYER_CHANCELOR_DISCARD     7
@@ -287,21 +292,29 @@ inline QDataStream & operator>>(QDataStream & stream, S_MESSAGE & MSG)
 #define CMD_TO_SERVER_END_TURN_OK           10
 #define CMD_TO_SERVER_NEW_PRESIDENT         11
 #define CMD_TO_SERVER_KILL_PLAYER           12
-#define CMD_TO_SERVER_START_VOTE_TO_KILL    13
-#define CMD_TO_PLAYER_VOTE_TO_KILL          14
-#define CMD_TO_SERVER_PLAYER_VOTED_TO_KILL  15
 #define CMD_TO_PLAYER_END_GAME              16
 #define CMD_TO_SERVER_CHANGE_NAME           17
 #define CMD_TO_PLAYER_INIT_COMMUNICATION    18
+#define CMD_TO_SERVER_DIRECTOR_ASKED_VETO   19
+#define CMD_TO_PLAYER_ASK_MINISTER_TO_VETO  20
+#define CMD_TO_SERVER_MINISTER_VETO_REPLY   21
+#define CMD_TO_PLAYER_VETO_RESULT           22
 #define CMD_TO_PLAYER_SET_NEW_IDENTIFIER    23
 #define CMD_TO_PLAYER_NEW_CONNECTION        24
 #define CMD_TO_SERVER_JOIN_GAME             25
 #define CMD_TO_PLAYER_PLAYER_JOINED         26
 #define CMD_TO_PLAYER_PLAYER_LEFT_GAME      27
 
+/*
+QDebug operator<<(QDebug debug, const S_PLAYER & player)
+{
+    debug.nospace() << player.name;
+    return debug;
+}
+
 inline QDebug operator<<(QDebug debug, const S_PLAYER &player)
 {
-    QString role, election, state, vote, power;
+    QString role, election, state, vote, power, roleName;
     switch(player.role)
     {
         case E_ROLE::faciste:
@@ -401,11 +414,58 @@ inline QDebug operator<<(QDebug debug, const S_PLAYER &player)
             break;
     }
 
-    QDebugStateSaver saver(debug);
-    debug.nospace() << '('
+    switch(player.roleName)
+    {
+        case E_ROLE_NAME::Albus:
+            roleName = "Albus";
+            break;
+
+        case E_ROLE_NAME::Beatrix:
+            roleName = "Beatrix";
+            break;
+
+        case E_ROLE_NAME::Drago:
+            roleName = "Drago";
+            break;
+
+        case E_ROLE_NAME::Harry:
+            roleName = "Harry";
+            break;
+
+        case E_ROLE_NAME::Hermione:
+            roleName = "Hermione";
+            break;
+
+        case E_ROLE_NAME::Lucius:
+            roleName = "Lucius";
+            break;
+
+        case E_ROLE_NAME::Neville:
+            roleName = "Neville";
+            break;
+
+        case E_ROLE_NAME::Ron:
+            roleName = "Ron";
+            break;
+
+        case E_ROLE_NAME::Sirius:
+            roleName = "Sirius";
+            break;
+
+        case E_ROLE_NAME::Voldemort:
+            roleName = "Voldemort";
+            break;
+
+        case E_ROLE_NAME::noOne:
+            roleName = "pas de rôle";
+            break;
+    }
+
+    //qDebug() << '(';
                       << "" << player.identifier
                       << ", " << player.name
                       << ", " << role
+                      << ", " << roleName
                       << ", " << state
                       << ", " << election
                       << ", " << vote
@@ -474,13 +534,12 @@ inline QDebug operator<<(QDebug debug, const S_BOARD &board)
         }
     }
 
-    QDebugStateSaver saver(debug);
-    qDebug() << "     -------------------- BOARD --------------------";
-    qDebug() << "     " << boardFaciste;
-    qDebug() << "     " << boardLiberal;
-    qDebug() << "     " << boardPower;
-    qDebug() << "     -----------------------------------------------";
-    return debug;
+    debug.nospace() << "     -------------------- BOARD --------------------";
+    debug.nospace() << "     " << boardFaciste;
+    debug.nospace() << "     " << boardLiberal;
+    debug.nospace() << "     " << boardPower;
+    debug.nospace() << "     -----------------------------------------------";
+    return debug.nospace();
 }
 
 inline QDebug operator<<(QDebug debug, const S_GAME_STATUS &game)
@@ -528,32 +587,29 @@ inline QDebug operator<<(QDebug debug, const S_GAME_STATUS &game)
             break;
     }
 
-    QDebugStateSaver saver(debug);
-
-    qDebug();
-    qDebug() << "     -------------------- GAME --------------------";
-    qDebug() << "     " << endGame;
-    qDebug() << "     Focus sur " << game.playerFocus;
-    qDebug() << "     ------------------ JOUEURS ------------------";
-    for(S_PLAYER player : game.players)
-        qDebug() << "     " << player;
-    qDebug() << "     ---------------------------------------------";
-    qDebug() << game.board;
-    qDebug() << "     " << pile;
-    qDebug() << "     ----------------------------------------------";
-    qDebug();
+    debug.nospace() << "     -------------------- GAME --------------------";
+    debug.nospace() << "     " << endGame;
+    debug.nospace() << "     Focus sur " << game.playerFocus;
+    debug.nospace() << "     ------------------ JOUEURS ------------------";
+    for(int i = 0; i < game.players.size(); i++)
+        debug.nospace() << &game.players[i];
+    qDebug() << "pass";
+    debug.nospace() << "     ---------------------------------------------";
+    debug.nospace() << game.board;
+    //debug.nospace() << "     " << pile;
+    //for(int i = 0; i < pile.size(); i++)
+        //debug.nospace() << pile;
+    debug.nospace() << "     ----------------------------------------------";
     return debug;
 }
 
 inline QDebug operator<<(QDebug debug, const S_MESSAGE &MSG)
 {
-    qDebug();
-    qDebug() << "------------------ MESSAGE --------------------";
-    qDebug() << "Commande : "<< MSG.command << "Identifiant : " << MSG.identifier << "   garbage : " << MSG.garbage;
-    qDebug() << MSG.gameStatus;
-    qDebug() << "----------------------------------------------";
-    qDebug();
+    debug.nospace() << "------------------ MESSAGE --------------------";
+    debug.nospace() << "Commande : "<< MSG.command << "Identifiant : " << MSG.identifier << "   garbage : " << MSG.garbage;
+    debug.nospace() << MSG.gameStatus;
+    debug.nospace() << "----------------------------------------------";
     return debug;
 }
-
+*/
 #endif // TYPES_H

@@ -1,9 +1,12 @@
 #include "controller.h"
 #include "ui_controller.h"
+#include "dialog_question.h"
+
 #include <QFontDatabase>
 #include <QMessageBox>
 #include <QCursor>
 #include <QTimer>
+#include <QMessageBox>
 
 QString g_RoleNames[] = {
     "Voldemort",
@@ -73,6 +76,7 @@ Controller::Controller(QMainWindow *parent):
     connect(wBoard, SIGNAL(sig_clickOnPlayer(E_IDENTIFIER)), this, SLOT(EVENT_playerSelected(E_IDENTIFIER)));
     connect(wScreenSeePowerUnlocked, SIGNAL(sig_startUsingPower(E_POWER)), this, SLOT(EVENT_startUsingPower(E_POWER)));
     connect(wScreenSeeLawCards, SIGNAL(sig_lawCardClicked(int)), this, SLOT(EVENT_discard(int)));
+    connect(wScreenSeeLawCards, SIGNAL(sig_vetoAsked()), this, SLOT(EVENT_vetoAsked()));
     connect(this, SIGNAL(sig_playMusic(SoundManager::E_MUSIC)), mSoundManager, SLOT(playMusic(SoundManager::E_MUSIC)));
     connect(this, SIGNAL(sig_playSound(SoundManager::E_SOUND)), mSoundManager, SLOT(playSound(SoundManager::E_SOUND)));
     connect(wMenu, SIGNAL(sig_playSound(SoundManager::E_SOUND)), mSoundManager, SLOT(playSound(SoundManager::E_SOUND)));
@@ -108,37 +112,40 @@ void Controller::gameState(S_MESSAGE MSG)
         case CMD_TO_PLAYER_START_GAME:
             STATE_gameStarted();
             initTurn();
-            STATE_chancelorNomination();
+            STATE_DirectorNomination();
             break;
 
-        case CMD_TO_PLAYER_ELECT_CHANCELOR:
+        case CMD_TO_PLAYER_ELECT_DIRECTOR:
             initTurn();
-            STATE_chancelorNomination();
+            STATE_DirectorNomination();
             break;
 
         case CMD_TO_PLAYER_START_VOTE:
             onTimeoutHideVotesReveal();
-            STATE_chancelorVote();
+            STATE_DirectorVote();
             break;
 
-        case CMD_TO_PLAYER_PRESIDENT_DRAW:
-            STATE_presidentAllowToDraw();
+        case CMD_TO_PLAYER_MINISTER_DRAW:
+            STATE_MinisterAllowToDraw();
             break;
 
-        case CMD_TO_PLAYER_CHANCELOR_DISCARD:
-            STATE_chancelorDiscard();
-        break;
+        case CMD_TO_PLAYER_DIRECTOR_DISCARD:
+            STATE_DirectorDiscard();
+            break;
+
+        case CMD_TO_PLAYER_ASK_MINISTER_TO_VETO:
+            STATE_MinisterReplyToVeto();
+            break;
+
+        case CMD_TO_PLAYER_VETO_RESULT:
+            STATE_forceDirectorToVote();
+            break;
 
         case CMD_TO_PLAYER_PUT_LAW_ON_BOARD:
             STATE_putLawOnBoard();
             break;
 
-        case CMD_TO_PLAYER_VOTE_TO_KILL:
-            STATE_powerStartVoteToKill();
-            break;
-
         case CMD_TO_PLAYER_PLAYER_VOTED:
-        case CMD_TO_PLAYER_PLAYER_VOTED_TO_KILL:
             STATE_showNewPlayerVote();
             break;
 
@@ -160,53 +167,86 @@ void Controller::STATE_gameStarted()
     emit sig_playMusic(SoundManager::E_MUSIC::none);
 }
 
-void Controller::STATE_chancelorNomination()
+void Controller::STATE_DirectorNomination()
 {
-    if(mMSG.gameStatus.players[mMSG.identifier].electionRole == E_ELECTION_ROLE::minister)
-    {
-        notifyPlayerHasToPlay();
-        wBoard->enableClickOnPlayers(true);
-    }
+    if(mMSG.gameStatus.players[mMSG.identifier].electionRole != E_ELECTION_ROLE::minister)
+        return;
+
+    notifyPlayerHasToPlay();
+    wBoard->enableClickOnPlayers(true);
 }
 
-void Controller::STATE_chancelorVote()
+void Controller::STATE_DirectorVote()
 {
     notifyPlayerHasToPlay();
     enableVote(true);
 }
 
-void Controller::STATE_presidentAllowToDraw()
+void Controller::STATE_MinisterAllowToDraw()
 {
-    if(mMSG.gameStatus.players[mMSG.identifier].electionRole == E_ELECTION_ROLE::minister)
-    {
-        notifyPlayerHasToPlay();
-        enableDraw(true);
-    }
+    if(mMSG.gameStatus.players[mMSG.identifier].electionRole != E_ELECTION_ROLE::minister)
+        return;
+
+    notifyPlayerHasToPlay();
+    enableDraw(true);
 }
 
-void Controller::STATE_presidentDiscard()
+void Controller::STATE_ministerDiscard()
 {
-    if(mMSG.gameStatus.players[mMSG.identifier].electionRole == E_ELECTION_ROLE::minister)
-    {
-        wScreenSeeLawCards->Setup_PresidentDiscard();
-        setScreenInCenter(E_SCREEN::seeLawCards);
-    }
+    if(mMSG.gameStatus.players[mMSG.identifier].electionRole != E_ELECTION_ROLE::minister)
+        return;
+
+    wScreenSeeLawCards->Setup_MinisterDiscard();
+    setScreenInCenter(E_SCREEN::seeLawCards);
+
 }
 
-void Controller::STATE_chancelorDiscard()
+void Controller::STATE_DirectorDiscard()
 {
-    if(mMSG.gameStatus.players[mMSG.identifier].electionRole == E_ELECTION_ROLE::director)
+    if(mMSG.gameStatus.players[mMSG.identifier].electionRole != E_ELECTION_ROLE::director)
+        return;
+
+    wScreenSeeLawCards->Setup_DirectorDiscard();
+    setScreenInCenter(E_SCREEN::seeLawCards);
+}
+
+void Controller::STATE_MinisterReplyToVeto()
+{
+    if(mMSG.gameStatus.players[mMSG.identifier].electionRole != E_ELECTION_ROLE::minister)
+        return;
+
+    notifyPlayerHasToPlay();
+
+    Dialog_Question dialog;
+    if(dialog.exec() == QDialog::Accepted)
     {
-        wScreenSeeLawCards->Setup_ChancelorDiscard();
-        setScreenInCenter(E_SCREEN::seeLawCards);
+        mMSG.garbage = 1;
     }
+    else
+    {
+        mMSG.garbage = 0;
+    }
+
+    mMSG.command = CMD_TO_SERVER_MINISTER_VETO_REPLY;
+    mTCP_API->send_MSG(mMSG);
+}
+
+void Controller::STATE_forceDirectorToVote()
+{
+    if(mMSG.gameStatus.players[mMSG.identifier].electionRole != E_ELECTION_ROLE::director)
+        return;
+
+    notifyPlayerHasToPlay();
+
+    // When we get a result, it means the Minister refused to veto.
+    wScreenSeeLawCards->vetoRefused();
 }
 
 void Controller::STATE_putLawOnBoard()
 {
     E_IDENTIFIER identifier = E_IDENTIFIER::ID_none;
 
-    // Get President identifier.
+    // Get Minister identifier.
     for(int i = 0; i < mMSG.gameStatus.players.size(); i++)
     {
         if(mMSG.gameStatus.players[i].electionRole == E_ELECTION_ROLE::minister)
@@ -219,7 +259,7 @@ void Controller::STATE_putLawOnBoard()
         qDebug() << "erreur président non trouvé";
 
     // Check if there is a power to activate.
-    if(mMSG.gameStatus.players[identifier].power != E_POWER::noPower)
+    if(mMSG.gameStatus.players[identifier].power != E_POWER::noPower && mMSG.gameStatus.electionTracker < 3)
     {
         // Start power reveal animation.
         setScreenInCenter(E_SCREEN::seePowerUnlocked);
@@ -230,7 +270,7 @@ void Controller::STATE_putLawOnBoard()
         if(mMSG.identifier == identifier)
         {
             mMSG.command = CMD_TO_SERVER_START_NEW_TURN;
-            mTCP_API->send_MSG(mMSG);
+            QTimer::singleShot(3000, this, [&]{ mTCP_API->send_MSG(mMSG); });
         }
     }
 }
@@ -281,7 +321,7 @@ void Controller::EVENT_draw()
     }
     else
     {
-        STATE_presidentDiscard();
+        STATE_ministerDiscard();
     }
 }
 
@@ -291,16 +331,8 @@ void Controller::EVENT_voted(E_VOTE vote)
 
     mMSG.gameStatus.players[mMSG.identifier].vote = vote;
 
-    if(mMSG.command == CMD_TO_PLAYER_START_VOTE || mMSG.command == CMD_TO_PLAYER_PLAYER_VOTED)
-    {
-        mMSG.command = CMD_TO_SERVER_PLAYER_VOTED;
-        mTCP_API->send_MSG(mMSG);
-    }
-    else
-    {
-        mMSG.command = CMD_TO_SERVER_PLAYER_VOTED_TO_KILL;
-        mTCP_API->send_MSG(mMSG);
-    }
+    mMSG.command = CMD_TO_SERVER_PLAYER_VOTED;
+    mTCP_API->send_MSG(mMSG);
 }
 
 void Controller::EVENT_discard(int identifier)
@@ -311,15 +343,16 @@ void Controller::EVENT_discard(int identifier)
 
     switch(mMSG.command)
     {
-        case CMD_TO_PLAYER_PRESIDENT_DRAW:
+        case CMD_TO_PLAYER_MINISTER_DRAW:
             mMSG.gameStatus.pile.removeAt(identifier);
-            mMSG.command = CMD_TO_SERVER_PRESIDENT_DISCARDED;
+            mMSG.command = CMD_TO_SERVER_MINISTER_DISCARDED;
             mTCP_API->send_MSG(mMSG);
             break;
 
-        case CMD_TO_PLAYER_CHANCELOR_DISCARD:
+        case CMD_TO_PLAYER_DIRECTOR_DISCARD:
+        case CMD_TO_PLAYER_VETO_RESULT:
             mMSG.gameStatus.pile.removeAt(identifier);
-            mMSG.command = CMD_TO_SERVER_CHANCELOR_DISCARDED;
+            mMSG.command = CMD_TO_SERVER_DIRECTOR_DISCARDED;
             mTCP_API->send_MSG(mMSG);
             break;
 
@@ -346,8 +379,8 @@ void Controller::EVENT_playerSelected(E_IDENTIFIER identifier)
     switch(mMSG.command)
     {
         case CMD_TO_PLAYER_START_GAME:
-        case CMD_TO_PLAYER_ELECT_CHANCELOR:
-            mMSG.command = CMD_TO_SERVER_GIVE_CHANCELOR;
+        case CMD_TO_PLAYER_ELECT_DIRECTOR:
+            mMSG.command = CMD_TO_SERVER_GIVE_DIRECTOR;
             mTCP_API->send_MSG(mMSG);
             break;
 
@@ -359,18 +392,12 @@ void Controller::EVENT_playerSelected(E_IDENTIFIER identifier)
                     break;
 
                 case E_POWER::chooseMinister:
-                    mMSG.command = CMD_TO_SERVER_NEW_PRESIDENT;
+                    mMSG.command = CMD_TO_SERVER_NEW_MINISTER;
                     mTCP_API->send_MSG(mMSG);
                     break;
 
                 case E_POWER::kill:
                     mMSG.command = CMD_TO_SERVER_KILL_PLAYER;
-                    mTCP_API->send_MSG(mMSG);
-                    break;
-
-                case E_POWER::voteToKill:
-                    onTimeoutHideVotesReveal();
-                    mMSG.command = CMD_TO_SERVER_START_VOTE_TO_KILL;
                     mTCP_API->send_MSG(mMSG);
                     break;
 
@@ -407,10 +434,6 @@ void Controller::EVENT_startUsingPower(E_POWER power)
                 wBoard->enableClickOnPlayers(true);
                 break;
 
-            case E_POWER::voteToKill:
-                wBoard->enableClickOnPlayers(true);
-                break;
-
             default:
                 qDebug() << "erreur apres écran de révélation du pouvoir";
                 break;
@@ -423,6 +446,7 @@ void Controller::EVENT_gameStatusChanged(E_END_GAME status)
     switch(status)
     {
         case E_END_GAME::notFinished:
+            wBoard->revealVotes(false);
             //STATE_gameStarted();
             break;
 
@@ -436,7 +460,16 @@ void Controller::EVENT_gameStatusChanged(E_END_GAME status)
 void Controller::EVENT_playerDie(E_IDENTIFIER)
 {
     if(mMSG.gameStatus.endGame == E_END_GAME::notFinished)
-         emit sig_playSound(SoundManager::E_SOUND::pistol);
+        emit sig_playSound(SoundManager::E_SOUND::pistol);
+}
+
+void Controller::EVENT_vetoAsked()
+{
+    // Reset garbage value in which Minister reply will be stock.
+    mMSG.garbage = 0;
+
+    mMSG.command = CMD_TO_SERVER_DIRECTOR_ASKED_VETO;
+    mTCP_API->send_MSG(mMSG);
 }
 
 void Controller::onTimeoutHideVotesReveal()
@@ -509,7 +542,9 @@ void Controller::initDummyGameStatus()
         QList<S_PLAYER>(),
         E_IDENTIFIER::ID_none,
         { 0, 0, { E_POWER::noPower, E_POWER::noPower, E_POWER::noPower, E_POWER::noPower, E_POWER::noPower, E_POWER::noPower } },
-        E_END_GAME::notStarted
+        E_END_GAME::notStarted,
+        0,
+        false
     };
     mMSG.gameStatus = dummyGame;
 }
@@ -552,11 +587,15 @@ void Controller::revealVotes()
 
 void Controller::notifyPlayerHasToPlay()
 {
+    if(mMSG.gameStatus.players[mMSG.identifier].status == E_PLAYER_STATUS::notPlaying)
+        return;
+
     // Notify player if the notifications are allowed.
     if(mParameters.notifications)
     {
         wPopupMessage->setText("ACTION À RÉALISER");
         wPopupMessage->setGeometry(0, 0, wBoard->width(), wBoard->height());
+        wPopupMessage->setWindowFlags(Qt::WindowStaysOnTopHint);
         wPopupMessage->show();
         wPopupMessage->startAnimation();
     }

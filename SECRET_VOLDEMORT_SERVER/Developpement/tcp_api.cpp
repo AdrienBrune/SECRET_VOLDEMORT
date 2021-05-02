@@ -55,10 +55,16 @@ void TCP_API::send_MSG(S_GAME_STATUS game)
     for(S_PLAYER player : game.players)
     {
         if(player.socket == nullptr)
+        {
+            qDebug() << "Player sans socket";
             continue;
+        }
 
         if(player.socket->state() == QTcpSocket::UnconnectedState)
+        {
+            qDebug() << "Player non connecté";
             continue;
+        }
 
         mMSG.identifier = player.identifier;
         QDataStream stream(player.socket);

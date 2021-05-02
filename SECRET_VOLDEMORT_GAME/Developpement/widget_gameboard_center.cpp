@@ -140,9 +140,27 @@ void Widget_Gameboard_Center::paintEvent(QPaintEvent *)
     // When hover is triggered and player is allowed to draw.
     if(mHover == true && wPile->isEnabled())
     {
-        painter.drawPixmap(QRect(roleArea.x() + roleArea.width()/10, roleArea.y(), roleArea.width(), roleArea.height()),
+        painter.drawPixmap(QRect(roleArea.x() + roleArea.width()/10, roleArea.y() - roleArea.width()/10, roleArea.width(), roleArea.height()),
                            QPixmap(QString(":/images/%1").arg(RES_LAW_BACK)));
-        painter.drawPixmap(QRect(roleArea.x() + 2*roleArea.width()/10, roleArea.y(), roleArea.width(), roleArea.height()),
+        painter.drawPixmap(QRect(roleArea.x() + 2*roleArea.width()/10, roleArea.y() - 2*roleArea.width()/10, roleArea.width(), roleArea.height()),
                            QPixmap(QString(":/images/%1").arg(RES_LAW_BACK)));
+    }
+
+    if(mMSG == nullptr)
+        return;
+
+    if(mHover == false || !wPile->isEnabled())
+    {
+        QRect textField(roleArea.x() + roleArea.width()/3, roleArea.y() + roleArea.height()*10/12, roleArea.width()/3, roleArea.height()/12);
+        painter.setFont(QFont("", roleArea.height()/30));
+
+        painter.setOpacity(0.05);
+        painter.setBrush(QBrush(QColor(250, 250, 250)));
+        painter.drawRect(textField);
+
+        painter.setOpacity(0.6);
+        painter.setPen(QPen(QBrush(QColor(250, 250, 250)), 1));
+        painter.drawText(textField, Qt::AlignCenter, QString("%1").arg(mMSG->gameStatus.pile.size()));
+        mMSG->gameStatus.pile.size();
     }
 }

@@ -18,7 +18,7 @@ SoundManager::SoundManager(QWidget* parent, bool* enableSounds, bool* enableMusi
     mSound_drawCard->setVolume(30);
 
     mSound_pistol = new QMediaPlayer(this);
-    mSound_pistol->setMedia(QUrl("qrc:/sounds/sound_shot.wav"));
+    mSound_pistol->setMedia(QUrl("qrc:/sounds/sound_kill.mp3"));
     mSound_pistol->setVolume(30);
 
     mSound_putDownCard = new QMediaPlayer(this);

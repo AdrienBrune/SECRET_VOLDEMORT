@@ -24,9 +24,7 @@ S_PLAYER *getPlayer(E_IDENTIFIER identifier, QList<S_PLAYER> & players)
         }
     }
 
-#ifndef LOG
     qDebug() << "aucun joueur trouvé avec getPlayer";
-#endif
 
     return nullptr;
 }
@@ -112,14 +110,6 @@ void initRole(S_GAME_STATUS* game)
 
 void initBoard(S_GAME_STATUS* game)
 {
-#ifndef LOG
-    qDebug() << "---------------------------------------";
-    qDebug() << "       INITIALISATION DU BOARD";
-    qDebug() << "---------------------------------------";
-
-    qDebug() << *game;
-#endif
-
     game->board.boardFaciste = 0;
     game->board.boardLiberal = 0;
 
@@ -131,7 +121,7 @@ void initBoard(S_GAME_STATUS* game)
             game->board.boardPower[1] = E_POWER::noPower;
             game->board.boardPower[2] = E_POWER::checkPile;
             game->board.boardPower[3] = E_POWER::kill;
-            game->board.boardPower[4] = E_POWER::voteToKill;
+            game->board.boardPower[4] = E_POWER::kill;
             game->board.boardPower[5] = E_POWER::noPower;
             break;
 
@@ -141,7 +131,7 @@ void initBoard(S_GAME_STATUS* game)
             game->board.boardPower[1] = E_POWER::checkRole;
             game->board.boardPower[2] = E_POWER::choosePresident;
             game->board.boardPower[3] = E_POWER::kill;
-            game->board.boardPower[4] = E_POWER::voteToKill;
+            game->board.boardPower[4] = E_POWER::kill;
             game->board.boardPower[5] = E_POWER::noPower;
             break;
 
@@ -151,50 +141,15 @@ void initBoard(S_GAME_STATUS* game)
             game->board.boardPower[1] = E_POWER::checkRole;
             game->board.boardPower[2] = E_POWER::choosePresident;
             game->board.boardPower[3] = E_POWER::kill;
-            game->board.boardPower[4] = E_POWER::voteToKill;
+            game->board.boardPower[4] = E_POWER::kill;
             game->board.boardPower[5] = E_POWER::noPower;
             break;
     }
-
-#ifndef LOG
-    qDebug() << *game;
-
-    qDebug() << "---------------------------------------";
-    qDebug() << "       INITIALISATION TERMINEE";
-    qDebug() << "---------------------------------------";
-#endif
 }
 
 void initPile(S_GAME_STATUS* game)
 {
-    quint8 LCardsNotput = 11, FCardsNotput = 22;
-
-    while(!game->pile.isEmpty())
-        game->pile.removeLast();
-
-    do
-    {
-        quint8 FCardPourcentage = static_cast<quint8>((static_cast<qreal>(FCardsNotput) / static_cast<qreal>(FCardsNotput + LCardsNotput)) * 100);
-        quint8 pourcentage = static_cast<quint8>(QRandomGenerator::global()->bounded(100 + 1));
-
-        if(pourcentage <= FCardPourcentage)
-        {
-            if(FCardsNotput != 0)
-            {
-                game->pile.append(E_CARD::facisteLaw);
-                FCardsNotput--;
-            }
-        }
-        else
-        {
-            if(LCardsNotput != 0)
-            {
-                game->pile.append(E_CARD::liberalLaw);
-                LCardsNotput--;
-            }
-        }
-
-    }while(LCardsNotput != 0 || FCardsNotput != 0);
+    generateNewPile(&game->pile);
 }
 
 void initPlayers(S_GAME_STATUS* game)
@@ -220,7 +175,7 @@ void setNextPresident(S_GAME_STATUS* game)
 {
     E_IDENTIFIER identifier = getPresidentIdentifier(*game);
 
-    // Set vice Presdient to none.
+    // Set vice President to none.
     for(int i = 0; i < game->players.size(); i++)
     {
         if(game->players[i].electionRole == E_ELECTION_ROLE::vicePresident)
@@ -234,7 +189,10 @@ void setNextPresident(S_GAME_STATUS* game)
     {
         if(game->players[i].electionRole == E_ELECTION_ROLE::president)
         {
-            game->players[i].electionRole = E_ELECTION_ROLE::vicePresident;
+            if(game->players.size() > 5)
+                game->players[i].electionRole = E_ELECTION_ROLE::vicePresident;
+            else
+                game->players[i].electionRole = E_ELECTION_ROLE::none;
             break;
         }
     }
@@ -258,7 +216,7 @@ void setNextPresident(S_GAME_STATUS* game)
 
 void setNewPresident(S_GAME_STATUS* game)
 {
-    // Set vice Presdient to none.
+    // Set vice President to none.
     for(int i = 0; i < game->players.size(); i++)
     {
         if(game->players[i].electionRole == E_ELECTION_ROLE::vicePresident)
@@ -288,9 +246,32 @@ void setNewPresident(S_GAME_STATUS* game)
    }
 }
 
-void setChancelor(S_GAME_STATUS* game, E_IDENTIFIER player)
+void setNextPresidentAfterSpecialTurn(E_IDENTIFIER lastPresident, E_IDENTIFIER specialPresident, S_GAME_STATUS *game)
 {
-    if(player == E_IDENTIFIER::ID_none)
+    E_IDENTIFIER indexPresident = lastPresident;
+    do
+    {
+        if(++indexPresident > game->players.size() - 1)
+            indexPresident = E_IDENTIFIER::ID_player1;
+
+    }while(game->players[indexPresident].status != E_PLAYER_STATUS::alive);
+
+    game->players[lastPresident].electionRole = E_ELECTION_ROLE::none;
+    game->players[specialPresident].electionRole =  E_ELECTION_ROLE::vicePresident;
+
+    // Set the President.
+    for(int i = 0; i < game->players.size(); i++)
+    {
+        if(game->players[i].identifier == indexPresident)
+        {
+            game->players[i].electionRole = E_ELECTION_ROLE::president;
+        }
+    }
+}
+
+void setChancelor(S_GAME_STATUS* game, E_IDENTIFIER identifier)
+{
+    if(identifier == E_IDENTIFIER::ID_none)
     {
         // Set vice Chancelor to none.
         for(int i = 0; i < game->players.size(); i++)
@@ -310,10 +291,9 @@ void setChancelor(S_GAME_STATUS* game, E_IDENTIFIER player)
             }
         }
     }
-    // Set Chancelor.
-    if(player != E_IDENTIFIER::ID_none)
+    else // Set Chancelor.
     {
-        game->players[player].electionRole = E_ELECTION_ROLE::chancelor;
+        game->players[identifier].electionRole = E_ELECTION_ROLE::chancelor;
     }
 }
 
@@ -438,20 +418,55 @@ E_ROLE getMissingRole(S_GAME_STATUS game)
     return E_ROLE::notAssigned;
 }
 
-void copyNewPile(QList<E_CARD> &newPile, QList<E_CARD> pileToCopy)
+E_ROLE_NAME getMissingRoleName(E_IDENTIFIER identifier, S_GAME_STATUS game)
 {
-    while(!newPile.isEmpty())
-        newPile.removeLast();
-
-    for(E_CARD card : pileToCopy)
+    S_PLAYER playerToSet = game.players[identifier];
+    bool nameAvailable = false;
+    switch(playerToSet.role)
     {
-        newPile.append(card);
+        case E_ROLE::faciste:
+            while(!nameAvailable)
+            {
+                nameAvailable = true;
+                playerToSet.roleName = static_cast<E_ROLE_NAME>(QRandomGenerator::global()->bounded(3) + 1);
+
+                for(const S_PLAYER & player : game.players)
+                {
+                    if(playerToSet.roleName == player.roleName)
+                    {
+                        nameAvailable = false;
+                    }
+                }
+            }
+            return playerToSet.roleName;
+
+        case E_ROLE::liberal:
+            while(!nameAvailable)
+            {
+                nameAvailable = true;
+                playerToSet.roleName = static_cast<E_ROLE_NAME>(QRandomGenerator::global()->bounded(6) + 4);
+
+                for(const S_PLAYER & player : game.players)
+                {
+                    if(playerToSet.roleName == player.roleName)
+                    {
+                        nameAvailable = false;
+                    }
+                }
+            }
+            return playerToSet.roleName;
+
+        case E_ROLE::hitler:
+            return E_ROLE_NAME::Voldemort;
+
+        default:
+            return E_ROLE_NAME::noOne;
     }
 }
 
 E_IDENTIFIER getPresidentIdentifier(S_GAME_STATUS game)
 {
-    for(const S_PLAYER &player : game.players)
+    for(const S_PLAYER & player : game.players)
     {
         if(player.electionRole == E_ELECTION_ROLE::president)
         {
@@ -463,6 +478,49 @@ E_IDENTIFIER getPresidentIdentifier(S_GAME_STATUS game)
     qDebug() << "erreur, aucun président trouvé";
 
     return E_IDENTIFIER::ID_none;
+}
+
+void copyNewPile(QList<E_CARD> &newPile, QList<E_CARD> pileToCopy)
+{
+    while(!newPile.isEmpty())
+        newPile.removeLast();
+
+    for(E_CARD card : pileToCopy)
+    {
+        newPile.append(card);
+    }
+}
+
+void generateNewPile(QList<E_CARD> * pile)
+{
+    quint8 LCardsNotput = 6, FCardsNotput = 11;
+
+    while(!pile->isEmpty())
+        pile->removeLast();
+
+    do
+    {
+        quint8 FCardPourcentage = static_cast<quint8>((static_cast<qreal>(FCardsNotput) / static_cast<qreal>(FCardsNotput + LCardsNotput)) * 100);
+        quint8 pourcentage = static_cast<quint8>(QRandomGenerator::global()->bounded(100 + 1));
+
+        if(pourcentage <= FCardPourcentage)
+        {
+            if(FCardsNotput != 0)
+            {
+                pile->append(E_CARD::facisteLaw);
+                FCardsNotput--;
+            }
+        }
+        else
+        {
+            if(LCardsNotput != 0)
+            {
+                pile->append(E_CARD::liberalLaw);
+                LCardsNotput--;
+            }
+        }
+
+    }while(LCardsNotput != 0 || FCardsNotput != 0);
 }
 
 QString getPowerString(E_POWER power)
@@ -483,9 +541,6 @@ QString getPowerString(E_POWER power)
 
         case E_POWER::kill:
             return "execution";
-
-        case E_POWER::voteToKill:
-            return "execution par vote";
     }
 }
 
@@ -547,9 +602,6 @@ QString getCommandString(quint8 command)
         case CMD_TO_PLAYER_PLAYER_VOTED:
             return "Js <- un joueur a voté";
 
-        case CMD_TO_PLAYER_PLAYER_VOTED_TO_KILL:
-            return "Js <- un joueur a voté pour tuer";
-
         case CMD_TO_PLAYER_PRESIDENT_DRAW:
             return "Js <- le Président doit piocher trois lois";
 
@@ -573,15 +625,6 @@ QString getCommandString(quint8 command)
 
         case CMD_TO_SERVER_KILL_PLAYER:
             return "S <- execution d'un joueur";
-
-        case CMD_TO_SERVER_START_VOTE_TO_KILL:
-            return "S <- début du vote pour l'execution";
-
-        case CMD_TO_PLAYER_VOTE_TO_KILL:
-            return "Js <- un joueur a voté pour l'execution";
-
-        case CMD_TO_SERVER_PLAYER_VOTED_TO_KILL:
-            return "S <- un joueur a voté pour l'execution";
 
         case CMD_TO_PLAYER_END_GAME:
             return "Js <- fin de la partie";
@@ -618,4 +661,152 @@ quint8 getNumberPlayersPlaying(S_GAME_STATUS game)
     }
 
     return numberPlayers;
+}
+
+void printPlayer(const S_PLAYER &player)
+{
+    QString roleNameMapping[] = {
+        "Voldemort",
+        "Lucius",
+        "Beatrix",
+        "Drago",
+        "Harry",
+        "Albus",
+        "Ron",
+        "Hermione",
+        "Sirius",
+        "Neville",
+        "pas de nom"
+    };
+
+    QString powerMapping[] = {
+        "X",
+        "regarder la pile",
+        "regarder un rôle",
+        "sélection du Ministre",
+        "Avada Kedavra",
+        "vote + Avada Kedavra"
+    };
+
+    QString electionRoleMapping[] = {
+        "Sorcier",
+        "Ministre",
+        "Vice Directeur",
+        "Directeur",
+        "Vice Ministre"
+    };
+
+    QString roleMapping[] = {
+        "pas de rôle",
+        "Ordre du Phénix",
+        "Mangemort",
+        "Chef des Mangemort"
+    };
+
+    QString voteMapping[] = {
+        "X",
+        "Lumos",
+        "Nox"
+    };
+
+    switch(player.status)
+    {
+        case E_PLAYER_STATUS::alive:
+            qDebug().nospace() << "[O][id:" << player.identifier << " " << player.name << "]"
+                << " (" << roleMapping[player.role-E_ROLE::notAssigned] << " : " << roleNameMapping[player.roleName-E_ROLE_NAME::Voldemort]
+                << "(" << electionRoleMapping[player.electionRole-E_ELECTION_ROLE::none] << "))"
+                << " (vote : " << voteMapping[player.vote-E_VOTE::blank] << " pouvoir : " << powerMapping[player.power-E_POWER::noPower] << ")";
+            break;
+
+        case E_PLAYER_STATUS::dead:
+            qDebug().nospace() << "[X][id:" << player.identifier << " " << player.name << "]"
+                << " (" << roleMapping[player.role-E_ROLE::notAssigned] << " : " << roleNameMapping[player.roleName-E_ROLE_NAME::Voldemort]
+                << "(" << electionRoleMapping[player.electionRole-E_ELECTION_ROLE::none] << "))"
+                << " (vote : " << voteMapping[player.vote-E_VOTE::blank] << " pouvoir : " << powerMapping[player.power-E_POWER::noPower] << ")";
+            break;
+
+        case E_PLAYER_STATUS::notPlaying:
+            qDebug().nospace() << "[-][id:" << player.identifier << " " << player.name << "]";
+            break;
+    }
+}
+
+void printBoard(const S_BOARD &board)
+{
+    QString topBoard, botBoard;
+
+    QString powerMapping[] = {
+        "-",
+        "P",
+        "R",
+        "S",
+        "K",
+        "V"
+    };
+
+    for(int i = 0; i < 5; i++)
+    {
+        if(i < board.boardLiberal)
+        {
+            topBoard += "O ";
+        }
+        else
+        {
+            topBoard += "- ";
+        }
+    }
+    topBoard += "  ";
+
+    for(int i = 0; i < 6; i++)
+    {
+        if(i < board.boardFaciste)
+        {
+            botBoard += "O ";
+        }
+        else
+        {
+            botBoard += powerMapping[board.boardPower[i]-E_POWER::noPower] + " ";
+        }
+    }
+
+    qDebug() << "------PLATEAU-------";
+    qDebug() << "  " << topBoard;
+    qDebug() << "  " << botBoard;
+    qDebug() << "--------------------";
+}
+
+void printGame(const S_GAME_STATUS & game)
+{
+    QString statusMapping[] = {
+        "Partie en attente",
+        "Partie en cours",
+        "Ordre du Phenix victorieux",
+        "Mangemorts victorieux",
+        "Voldemort a prit le pouvoir",
+        "Voldemort tué"
+    };
+
+    qDebug();
+    qDebug() << "-------PARTIE-------";
+    qDebug() << statusMapping[game.endGame-E_END_GAME::notStarted];
+    qDebug() << "-------JOUEURS------";
+    if(game.players.size() != 0)
+        if(game.playerFocus != E_IDENTIFIER::ID_none)
+            qDebug() << "Focus : " << game.playerFocus;
+    for(const S_PLAYER & player : game.players)
+        printPlayer(player);
+    qDebug() << "--------------------";
+    printBoard(game.board);
+    qDebug();
+}
+
+quint8 getNumberPlayersAlive(S_GAME_STATUS game)
+{
+    quint8 playersAlive = 0;
+    for(int i = 0; i < game.players.size(); i++)
+    {
+        if(game.players[i].status == E_PLAYER_STATUS::alive)
+            playersAlive++;
+    }
+    return playersAlive;
 }
