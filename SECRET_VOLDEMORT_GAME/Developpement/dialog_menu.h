@@ -47,6 +47,9 @@ public:
     int* getPort();
     void showMessageStatus(QString);
 
+protected:
+    void paintEvent(QPaintEvent *);
+
 public:
     int mPort;
     QString mIp;
