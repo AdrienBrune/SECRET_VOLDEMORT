@@ -32,13 +32,7 @@
    <string>Dialog</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QDialog{background-color:rgb(50,50,50);
-border-style: outset;
-border-width: 5px;
-border-radius: 2px;
-border-color:rgb(100,80,0);
-
-}</string>
+   <string notr="true"/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,0,0,0,0,0,0,0">
    <property name="spacing">
@@ -156,11 +150,17 @@ border-color:rgb(100,80,0);
         </font>
        </property>
        <property name="styleSheet">
-        <string notr="true">QLineEdit{color:rgb(200,200,200);background-color:rgb(50,50,50);
-border-style: outset;
-border-width: 2px;
-border-radius: 2px;
-border-color:rgb(100,80,0);
+        <string notr="true">QLineEdit{
+	background-color : rgba(250,250,250,20);
+	color : #CCCCCC;
+	border-style: outset;
+	border-width: 2px;
+	border-radius: 2px;
+	border-color:rgb(100,80,0);
+}
+
+QLineEdit::hover{
+	background-color : rgba(250,250,250,40);
 }</string>
        </property>
        <property name="alignment">
@@ -190,11 +190,17 @@ border-color:rgb(100,80,0);
      <item>
       <widget class="QLineEdit" name="editIp">
        <property name="styleSheet">
-        <string notr="true">QLineEdit{color:rgb(200,200,200);background-color:rgb(50,50,50);
-border-style: outset;
-border-width: 2px;
-border-radius: 2px;
-border-color:rgb(100,80,0);
+        <string notr="true">QLineEdit{
+	background-color : rgba(250,250,250,20);
+	color : #CCCCCC;
+	border-style: outset;
+	border-width: 2px;
+	border-radius: 2px;
+	border-color:rgb(100,80,0);
+}
+
+QLineEdit::hover{
+	background-color : rgba(250,250,250,40);
 }</string>
        </property>
        <property name="text">
@@ -227,11 +233,17 @@ border-color:rgb(100,80,0);
      <item>
       <widget class="QLineEdit" name="editPort">
        <property name="styleSheet">
-        <string notr="true">QLineEdit{color:rgb(200,200,200);background-color:rgb(50,50,50);
-border-style: outset;
-border-width: 2px;
-border-radius: 2px;
-border-color:rgb(100,80,0);
+        <string notr="true">QLineEdit{
+	background-color : rgba(250,250,250,20);
+	color : #CCCCCC;
+	border-style: outset;
+	border-width: 2px;
+	border-radius: 2px;
+	border-color:rgb(100,80,0);
+}
+
+QLineEdit::hover{
+	background-color : rgba(250,250,250,40);
 }</string>
        </property>
        <property name="text">
@@ -286,8 +298,18 @@ color:rgb(200,200,200);
      <item>
       <widget class="QPushButton" name="buttonConnect">
        <property name="styleSheet">
-        <string notr="true">QPushButton{color:rgb(220,220,220);background-color:rgb(70,70,70);}
-QPushButton::hover{background-color:rgb(75,75,75);}</string>
+        <string notr="true">QPushButton{
+	background-color : rgba(250,250,250,20);
+	color : #CCCCCC;
+	padding-left : 20px;
+	padding-right : 20px;
+	padding-top : 5px;
+	padding-bottom : 5px;
+}
+
+QPushButton::hover{
+	background-color : rgba(250,250,250,40);
+}</string>
        </property>
        <property name="text">
         <string>CONNEXION</string>
@@ -297,8 +319,18 @@ QPushButton::hover{background-color:rgb(75,75,75);}</string>
      <item>
       <widget class="QPushButton" name="buttonBoard">
        <property name="styleSheet">
-        <string notr="true">QPushButton{color:rgb(220,220,220);background-color:rgb(70,70,70);}
-QPushButton::hover{background-color:rgb(75,75,75);}</string>
+        <string notr="true">QPushButton{
+	background-color : rgba(250,250,250,20);
+	color : #CCCCCC;
+	padding-left : 20px;
+	padding-right : 20px;
+	padding-top : 5px;
+	padding-bottom : 5px;
+}
+
+QPushButton::hover{
+	background-color : rgba(250,250,250,40);
+}</string>
        </property>
        <property name="text">
         <string>DISPLAY BOARD</string>
@@ -308,8 +340,18 @@ QPushButton::hover{background-color:rgb(75,75,75);}</string>
      <item>
       <widget class="QPushButton" name="buttonJoinGame">
        <property name="styleSheet">
-        <string notr="true">QPushButton{color:rgb(220,220,220);background-color:rgb(70,70,70);}
-QPushButton::hover{background-color:rgb(75,75,75);}</string>
+        <string notr="true">QPushButton{
+	background-color : rgba(250,250,250,20);
+	color : #CCCCCC;
+	padding-left : 20px;
+	padding-right : 20px;
+	padding-top : 5px;
+	padding-bottom : 5px;
+}
+
+QPushButton::hover{
+	background-color : rgba(250,250,250,40);
+}</string>
        </property>
        <property name="text">
         <string>REJOINDRE UNE PARTIE EN COURS</string>
@@ -319,8 +361,18 @@ QPushButton::hover{background-color:rgb(75,75,75);}</string>
      <item>
       <widget class="QPushButton" name="buttonClose">
        <property name="styleSheet">
-        <string notr="true">QPushButton{color:rgb(220,220,220);background-color:rgb(70,70,70);}
-QPushButton::hover{background-color:rgb(75,75,75);}</string>
+        <string notr="true">QPushButton{
+	background-color : rgba(250,250,250,20);
+	color : #CCCCCC;
+	padding-left : 20px;
+	padding-right : 20px;
+	padding-top : 5px;
+	padding-bottom : 5px;
+}
+
+QPushButton::hover{
+	background-color : rgba(250,250,250,40);
+}</string>
        </property>
        <property name="text">
         <string>FERMER LA FENETRE</string>

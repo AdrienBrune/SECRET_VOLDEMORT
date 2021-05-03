@@ -19,3 +19,4 @@ Debug
 *.Release
 *.rc
 *.qm
+.DS_Store

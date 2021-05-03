@@ -1,6 +1,7 @@
 #include "dialog_menu.h"
 #include "ui_dialog_menu.h"
 #include <QDebug>
+#include <QPainter>
 
 Dialog_Menu::Dialog_Menu(QWidget *parent) :
     QDialog(parent),
@@ -10,6 +11,8 @@ Dialog_Menu::Dialog_Menu(QWidget *parent) :
     ui(new Ui::Menu)
 {
     ui->setupUi(this);
+
+    setAttribute(Qt::WA_TranslucentBackground);
 
     QCursor cursor(QPixmap(":/images/custom_cursor.png"), 20, 20);
     setCursor(cursor);
@@ -92,6 +95,15 @@ void Dialog_Menu::showMessageStatus(QString message)
 {
     ui->message->setText(message);
     QTimer::singleShot(1000, this, [&](){ui->message->setText("");});
+}
+
+void Dialog_Menu::paintEvent(QPaintEvent *)
+{
+    QPainter painter(this);
+
+    painter.setOpacity(0.96);
+    painter.setBrush(QColor(19,19,19));
+    painter.drawRect(QRect(0, 0, width(), height()));
 }
 
 void Dialog_Menu::onEditPort(const QString &text)
