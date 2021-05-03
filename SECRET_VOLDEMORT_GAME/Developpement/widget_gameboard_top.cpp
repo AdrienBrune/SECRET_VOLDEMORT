@@ -188,15 +188,15 @@ void Widget_Gameboard_Top::paintEvent(QPaintEvent*)
         return;
 
     QPen pen_black(QBrush(QColor(0x00,0x00,0x00)), 1);
-    QPen pen_white(QBrush(QColor(0xFF,0xFF,0xFF)), 1);
+    QPen pen_white(QBrush(QColor(0xCC,0xCC,0xCC)), 1);
 
     QRect text = QRect(ui->label->x(), ui->label->y(), ui->label->width(), ui->label->height());
     QRect shadow = QRect(text.x() + 3, text.y(), text.width(), text.height());
 
     mState = getIndexMessageCorrespondingToSituation();
 
-    QFont font("Castellar");
-    font.setStretch(45);
+    QFont font("Germania");
+    font.setStretch(70);
     font.setPixelSize(ui->label->width()/21);
     font.setBold(true);
     painter.setFont(font);

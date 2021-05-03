@@ -281,7 +281,7 @@ color:rgb(200,200,200);
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <property name="spacing">
-      <number>2</number>
+      <number>15</number>
      </property>
      <item>
       <widget class="QPushButton" name="buttonConnect">
