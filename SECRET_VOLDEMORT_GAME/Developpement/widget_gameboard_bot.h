@@ -26,6 +26,7 @@ public:
     void updateWidget();
 
 protected:
+    void resizeEvent(QResizeEvent *);
     void paintEvent(QPaintEvent *);
 
 public:

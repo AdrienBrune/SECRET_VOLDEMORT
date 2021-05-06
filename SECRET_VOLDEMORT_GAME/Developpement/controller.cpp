@@ -33,23 +33,19 @@ Controller::Controller(QMainWindow *parent):
     ui->toolBar->setMovable(false);
     ui->toolBar->setStyleSheet("QToolBar{border-bottom:3px solid black; background-color:#191919;}"
                                "QToolButton{border:no border;spacing:0px;}"
-                               "QToolButton::hover{background-color:#10202020;}"
-                               );
-    hide();
-
+                               "QToolButton::hover{background-color:#10202020;}");
     initDummyGameStatus();
 
-    QFontDatabase::addApplicationFont(":/fonts/OLDGATEL.ttf");
-    QFontDatabase::addApplicationFont(":/fonts/HyliaSerif.ttf");
-    QFontDatabase::addApplicationFont(":/fonts/BELL.ttf");
     QFontDatabase::addApplicationFont(":/fonts/Germania.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/HARRYP.TTF");
 
     mHandlerVotes.t_displayer = new QTimer(this);
     connect(mHandlerVotes.t_displayer, SIGNAL(timeout()), this, SLOT(onTimeoutHideVotesReveal()));
 
     wBoard = new Widget_Gameboard(this, &mMSG, mHandlerVotes.votes);
     ui->layout->addWidget(wBoard);
-    wMenu = new Dialog_Menu(this);
+    wMenu = new Dialog_Menu();
+    mTCP_API = new TCP_API(this, wMenu->getName(), wMenu->getIp());
     wScreenSeePlayerRole = new Widget_ScreenCheckRole(this, &mMSG);
     wScreenSeeLawCards = new Widget_ScreenLawCards(this, &mMSG);
     wScreenSeePowerUnlocked = new Widget_ScreenPowerUnlocked(this);
@@ -57,16 +53,13 @@ Controller::Controller(QMainWindow *parent):
     mSoundManager = new SoundManager(this, &mParameters.sound, &mParameters.music);
     wPopupMessage = new Widget_PopupMessage(wBoard);
 
-    wMenu->show();
+    wMenu->hide();
     wScreenSeePlayerRole->hide();
     wScreenSeeLawCards->hide();
     wScreenSeePowerUnlocked->hide();
     wPopupMessage->hide();
 
-    mTCP_API = new TCP_API(this, wMenu->getName(), wMenu->getIp(), wMenu->getPort());
-
     connect(wMenu, SIGNAL(sig_connection()), mTCP_API, SLOT(connectToServer()));
-    connect(wMenu, SIGNAL(sig_showBoard()), this, SLOT(onShowBoard()));
     connect(wMenu, SIGNAL(sig_joinGame()), this, SLOT(onJoinGame()));
     connect(mTCP_API, SIGNAL(sig_connectionResult(QAbstractSocket::SocketState)), wMenu, SLOT(onShowConnectionResult(QAbstractSocket::SocketState)));
     connect(mTCP_API, SIGNAL(sig_MSG_received(S_MESSAGE)), this, SLOT(gameState(S_MESSAGE)));
@@ -88,11 +81,13 @@ Controller::Controller(QMainWindow *parent):
     connect(wPopupMessage, SIGNAL(sig_playSound(SoundManager::E_SOUND)), mSoundManager, SLOT(playSound(SoundManager::E_SOUND)));
 
     emit sig_playMusic(SoundManager::E_MUSIC::waitingGame);
+
+    show();
 }
 
 Controller::~Controller()
 {
-    delete wPopupMessage;
+    delete wMenu;
 }
 
 void Controller::gameState(S_MESSAGE MSG)

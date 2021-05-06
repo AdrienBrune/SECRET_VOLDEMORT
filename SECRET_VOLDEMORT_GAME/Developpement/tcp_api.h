@@ -10,7 +10,7 @@ class TCP_API : public QObject
 {
     Q_OBJECT
 public:
-    explicit TCP_API(QObject *parent = nullptr, QString* name = nullptr, QString* ip = nullptr, int* port = nullptr);
+    explicit TCP_API(QObject *parent = nullptr, QString* name = nullptr, QString* ip = nullptr);
 
 signals :
     void sig_MSG_received(S_MESSAGE);
@@ -32,7 +32,6 @@ public:
 private :
     QString* mName;
     QString* mIp;
-    int* mPort;
 
 public :
     QTcpSocket * mSocket;

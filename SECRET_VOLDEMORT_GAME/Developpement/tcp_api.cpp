@@ -1,11 +1,11 @@
 #include "tcp_api.h"
+#include "dialog_menu.h"
 #include <QTimer>
 
-TCP_API::TCP_API(QObject *parent, QString* name, QString* ip, int* port):
+TCP_API::TCP_API(QObject *parent, QString* name, QString* ip):
     QObject(parent),
     mName(name),
-    mIp(ip),
-    mPort(port)
+    mIp(ip)
 {
     mSocket = new QTcpSocket(this);
     connect(mSocket,SIGNAL(connected()),this,SLOT(connection()));
@@ -29,7 +29,7 @@ void TCP_API::connectToServer()
         connect(mSocket, SIGNAL(readyRead()), this, SLOT(receive_MSG()));
     }
 
-    mSocket->connectToHost(QHostAddress(*mIp), static_cast<quint16>(*mPort));
+    mSocket->connectToHost(QHostAddress(*mIp), static_cast<quint16>(DEFAULT_PORT));
 
     QTimer::singleShot(500, [&](){ emit sig_connectionResult(mSocket->state()); });
 }
@@ -54,8 +54,6 @@ void TCP_API::send_MSG(S_MESSAGE MSG)
 
     QDataStream stream(mSocket);
     stream << MSG;
-
-    //qDebug() << "message envoyé : " + QString("%1").arg(MSG.command);
 }
 
 void TCP_API::receive_MSG()
@@ -76,6 +74,4 @@ void TCP_API::receive_MSG()
     }
 
     emit sig_MSG_received(MSG);
-
-    //qDebug() << "message reçu : " + QString("%1").arg(MSG.command);
 }

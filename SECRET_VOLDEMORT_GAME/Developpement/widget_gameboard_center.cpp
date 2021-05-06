@@ -158,7 +158,7 @@ void Widget_Gameboard_Center::paintEvent(QPaintEvent *)
         painter.setBrush(QBrush(QColor(250, 250, 250)));
         painter.drawRect(textField);
 
-        painter.setOpacity(0.8);
+        painter.setOpacity(0.9);
         painter.setPen(QPen(QBrush(QColor(250, 250, 250)), 1));
         painter.drawText(textField, Qt::AlignCenter, QString("%1").arg(mMSG->gameStatus.pile.size()));
         mMSG->gameStatus.pile.size();

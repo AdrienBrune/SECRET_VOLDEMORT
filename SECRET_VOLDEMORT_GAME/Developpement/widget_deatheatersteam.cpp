@@ -10,8 +10,8 @@ Widget_FacistTeam::Widget_FacistTeam(QWidget* parent, S_MESSAGE* MSG):
     buttonExit->setMinimumSize(QSize(50, 50));
     buttonExit->setMaximumSize(QSize(50, 50));
     buttonExit->setText("Ok");
-    buttonExit->setStyleSheet("QPushButton{color:rgba(250,250,250,240);;background-color:rgba(0,0,0,60);border:1px solid rgba(250,250,250,50);padding:5px;}"
-                              "QPushButton::hover{color:rgba(250,250,250,200);background-color:rgba(0,0,0,80);}");
+    buttonExit->setStyleSheet("QPushButton{color:rgba(250,250,250,120);;background-color:rgba(0,0,0,60);border:1px solid rgba(250,250,250,120);padding:5px;}"
+                              "QPushButton::hover{color:rgba(250,250,250,200);background-color:rgba(0,0,0,80);border:1px solid rgba(250,250,250,200);}");
     connect(buttonExit, SIGNAL(clicked()), this, SIGNAL(sig_hideFacistTeam()));
 
     QVBoxLayout* layout = new QVBoxLayout(this);
@@ -37,9 +37,7 @@ void Widget_FacistTeam::paintEvent(QPaintEvent*)
     painter.drawPixmap(0, 0, width(), height(), QPixmap(":/images/border_bot.png"));
 
     if(mMSG->gameStatus.players.size() < 5)
-    {
         return;
-    }
 
     // Set area.
     QRect area(width()/10, height()/10, width()*8/10, height()*8/10);
@@ -101,9 +99,9 @@ void Widget_FacistTeam::paintEvent(QPaintEvent*)
 
     // Draw labels.
     painter.setPen(QColor(0xFF,0xFF,0xFF));
-    QFont fontName("Germania");
+    QFont fontName("Harry P");
     fontName.setBold(false);
-    fontName.setPointSize(10);
+    fontName.setPointSize(15);
 
     QFont fontRole("Times New Roman");
     fontRole.setBold(true);

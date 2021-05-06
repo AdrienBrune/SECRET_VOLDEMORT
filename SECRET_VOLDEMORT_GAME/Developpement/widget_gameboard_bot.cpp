@@ -31,11 +31,13 @@ void Widget_Gameboard_Bot::initWidget()
     {
         case E_ELECTION_ROLE::minister:
             ui->role->setStyleSheet(QString("QLabel{border-image:url(:/images/%1);}").arg(RES_MINISTER));
+            ui->role->setFixedHeight(ui->role->width()/3);
             ui->role->show();
             break;
 
         case E_ELECTION_ROLE::director:
             ui->role->setStyleSheet(QString("QLabel{border-image:url(:/images/%1);}").arg(RES_DIRECTOR));
+            ui->role->setFixedHeight(ui->role->width()/3);
             ui->role->show();
             break;
 
@@ -250,16 +252,25 @@ void Widget_Gameboard_Bot::paintEvent(QPaintEvent*)
 void Widget_Gameboard_Bot::hideRole()
 {
     ui->role->hide();
+    ui->role->setFixedHeight(ui->role->width()/3);
 }
 
 void Widget_Gameboard_Bot::updateWidget()
 {
     wGameState->update();
+    ui->role->setFixedHeight(ui->role->width()/3);
+}
+
+void Widget_Gameboard_Bot::resizeEvent(QResizeEvent * e)
+{
+    QWidget::resizeEvent(e);
+    ui->role->setFixedHeight(ui->role->width()/3);
 }
 
 void Widget_Gameboard_Bot::showRole()
 {
     ui->role->show();
+    ui->role->setFixedHeight(ui->role->width()/3);
 }
 
 

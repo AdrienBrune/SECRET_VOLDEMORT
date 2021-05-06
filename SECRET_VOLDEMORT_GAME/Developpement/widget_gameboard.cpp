@@ -51,6 +51,7 @@ void Widget_Gameboard::onHideFacistTeam()
     // Display new screen.
     ui->layout_bot->addWidget(wWidgetBot);
     wWidgetBot->show();
+    wWidgetBot->initWidget();
 }
 
 void Widget_Gameboard::switchCurrentScreenWith(QWidget * screen)

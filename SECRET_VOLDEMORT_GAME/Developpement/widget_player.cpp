@@ -158,7 +158,7 @@ void Widget_Player::paintEvent(QPaintEvent*)
                 painter.drawRect(box);
                 // draw text.
                 painter.setOpacity(1);
-                painter.setFont(QFont("Germania", 16));
+                painter.setFont(QFont("Harry P", 20));
                 painter.drawText(labelName, Qt::AlignCenter, mMSG->gameStatus.players[mIdentifier].name);
                 painter.setFont(QFont("Times New Roman", 8));
                 painter.drawText(labelRole, Qt::AlignCenter, "Mangemort");
@@ -170,7 +170,7 @@ void Widget_Player::paintEvent(QPaintEvent*)
                 painter.drawRect(box);
                 // draw text.
                 painter.setOpacity(1);
-                painter.setFont(QFont("Germania", 16));
+                painter.setFont(QFont("Harry P", 20));
                 painter.drawText(labelName, Qt::AlignCenter, mMSG->gameStatus.players[mIdentifier].name);
                 painter.setFont(QFont("Times New Roman", 8));
                 painter.drawText(labelRole, Qt::AlignCenter, "Ordre du Phénix");
@@ -182,7 +182,7 @@ void Widget_Player::paintEvent(QPaintEvent*)
                 painter.drawRect(box);
                 // draw text.
                 painter.setOpacity(1);
-                painter.setFont(QFont("Germania", 16));
+                painter.setFont(QFont("Harry P", 20));
                 painter.drawText(labelName, Qt::AlignCenter, mMSG->gameStatus.players[mIdentifier].name);
                 painter.setFont(QFont("Times New Roman", 8));
                 painter.drawText(labelRole, Qt::AlignCenter, "Voldemort");
@@ -194,7 +194,7 @@ void Widget_Player::paintEvent(QPaintEvent*)
                 painter.drawRect(box);
                 // draw texts.
                 painter.setOpacity(1);
-                painter.setFont(QFont("Germania", 16));
+                painter.setFont(QFont("Harry P", 20));
                 painter.drawText(labelName, Qt::AlignCenter, mMSG->gameStatus.players[mIdentifier].name);
                 painter.setFont(QFont("Times New Roman", 8));
                 painter.drawText(labelRole, Qt::AlignCenter, "En attente");
@@ -261,7 +261,7 @@ void Widget_Player::paintEvent(QPaintEvent*)
 
     // draw texts.
     painter.setOpacity(1);
-    painter.setFont(QFont("Times New Roman", 8));
+    painter.setFont(QFont("Times New Roman", 9));
     switch(mMSG->gameStatus.players[mIdentifier].status)
     {
         case E_PLAYER_STATUS::alive:
@@ -303,7 +303,7 @@ void Widget_Player::paintEvent(QPaintEvent*)
             painter.drawText(labelRole, Qt::AlignCenter, "En attente");
             break;
     }
-    painter.setFont(QFont("Germania", 16));
+    painter.setFont(QFont("Harry P", 20));
     painter.drawText(labelName, Qt::AlignCenter, mMSG->gameStatus.players[mIdentifier].name);
 
     // draw vote.

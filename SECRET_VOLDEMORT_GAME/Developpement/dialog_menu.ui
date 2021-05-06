@@ -111,7 +111,7 @@
     </spacer>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,0,0,0,0">
+    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,0,0">
      <property name="spacing">
       <number>5</number>
      </property>
@@ -125,7 +125,7 @@
        </property>
        <property name="font">
         <font>
-         <family>Microsoft Yi Baiti</family>
+         <family>High Tower Text</family>
          <pointsize>10</pointsize>
         </font>
        </property>
@@ -142,13 +142,6 @@
      </item>
      <item>
       <widget class="QLineEdit" name="editName">
-       <property name="font">
-        <font>
-         <family>Monotype Corsiva</family>
-         <pointsize>10</pointsize>
-         <italic>true</italic>
-        </font>
-       </property>
        <property name="styleSheet">
         <string notr="true">QLineEdit{
 	background-color : rgba(250,250,250,20);
@@ -157,6 +150,7 @@
 	border-width: 2px;
 	border-radius: 2px;
 	border-color:rgb(100,80,0);
+	selection-background-color: rgba(250,250,250,50);
 }
 
 QLineEdit::hover{
@@ -172,7 +166,7 @@ QLineEdit::hover{
       <widget class="QLabel" name="label_2">
        <property name="font">
         <font>
-         <family>Microsoft Yi Baiti</family>
+         <family>High Tower Text</family>
          <pointsize>10</pointsize>
         </font>
        </property>
@@ -180,7 +174,7 @@ QLineEdit::hover{
         <string notr="true">color:rgb(200,200,200);</string>
        </property>
        <property name="text">
-        <string>IP</string>
+        <string>Ip</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -197,6 +191,7 @@ QLineEdit::hover{
 	border-width: 2px;
 	border-radius: 2px;
 	border-color:rgb(100,80,0);
+	selection-background-color: rgba(250,250,250,50);
 }
 
 QLineEdit::hover{
@@ -205,49 +200,6 @@ QLineEdit::hover{
        </property>
        <property name="text">
         <string>127.0.01</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_3">
-       <property name="font">
-        <font>
-         <family>Microsoft Yi Baiti</family>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color:rgb(200,200,200);</string>
-       </property>
-       <property name="text">
-        <string>PORT</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="editPort">
-       <property name="styleSheet">
-        <string notr="true">QLineEdit{
-	background-color : rgba(250,250,250,20);
-	color : #CCCCCC;
-	border-style: outset;
-	border-width: 2px;
-	border-radius: 2px;
-	border-color:rgb(100,80,0);
-}
-
-QLineEdit::hover{
-	background-color : rgba(250,250,250,40);
-}</string>
-       </property>
-       <property name="text">
-        <string>30000</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -297,6 +249,12 @@ color:rgb(200,200,200);
      </property>
      <item>
       <widget class="QPushButton" name="buttonConnect">
+       <property name="font">
+        <font>
+         <family>High Tower Text</family>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="styleSheet">
         <string notr="true">QPushButton{
 	background-color : rgba(250,250,250,20);
@@ -312,33 +270,18 @@ QPushButton::hover{
 }</string>
        </property>
        <property name="text">
-        <string>CONNEXION</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="buttonBoard">
-       <property name="styleSheet">
-        <string notr="true">QPushButton{
-	background-color : rgba(250,250,250,20);
-	color : #CCCCCC;
-	padding-left : 20px;
-	padding-right : 20px;
-	padding-top : 5px;
-	padding-bottom : 5px;
-}
-
-QPushButton::hover{
-	background-color : rgba(250,250,250,40);
-}</string>
-       </property>
-       <property name="text">
-        <string>DISPLAY BOARD</string>
+        <string>Connexion</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="buttonJoinGame">
+       <property name="font">
+        <font>
+         <family>High Tower Text</family>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="styleSheet">
         <string notr="true">QPushButton{
 	background-color : rgba(250,250,250,20);
@@ -354,12 +297,18 @@ QPushButton::hover{
 }</string>
        </property>
        <property name="text">
-        <string>REJOINDRE UNE PARTIE EN COURS</string>
+        <string>Joindre une partie en cours</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="buttonClose">
+       <property name="font">
+        <font>
+         <family>High Tower Text</family>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="styleSheet">
         <string notr="true">QPushButton{
 	background-color : rgba(250,250,250,20);
@@ -375,7 +324,7 @@ QPushButton::hover{
 }</string>
        </property>
        <property name="text">
-        <string>FERMER LA FENETRE</string>
+        <string>Fermer la fenêtre</string>
        </property>
       </widget>
      </item>

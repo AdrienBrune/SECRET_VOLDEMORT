@@ -5,7 +5,6 @@
 
 Dialog_Menu::Dialog_Menu(QWidget *parent) :
     QDialog(parent),
-    mPort(DEFAULT_PORT),
     mIp(DEFAULT_IP),
     mName(""),
     ui(new Ui::Menu)
@@ -13,20 +12,18 @@ Dialog_Menu::Dialog_Menu(QWidget *parent) :
     ui->setupUi(this);
 
     setAttribute(Qt::WA_TranslucentBackground);
+    setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
 
     QCursor cursor(QPixmap(":/images/custom_cursor.png"), 20, 20);
     setCursor(cursor);
 
     connect(ui->editIp, SIGNAL(textEdited(QString)), this, SLOT(onEditIp(QString)));
-    connect(ui->editPort, SIGNAL(textEdited(QString)), this, SLOT(onEditPort(QString)));
     connect(ui->editName, SIGNAL(textEdited(QString)), this, SLOT(onEditName(QString)));
     connect(ui->buttonConnect, SIGNAL(clicked()), this, SLOT(onButtonConnectionClicked()));
-    connect(ui->buttonBoard, SIGNAL(clicked()), this, SLOT(onButtonBoardClicked()));
     connect(ui->buttonClose, SIGNAL(clicked()), this, SLOT(onButtonCloseClicked()));
     connect(ui->buttonJoinGame, SIGNAL(clicked()), this, SLOT(onButtonJoinGame()));
 
     ui->buttonJoinGame->hide();
-    ui->buttonClose->hide();
 }
 
 Dialog_Menu::~Dialog_Menu()
@@ -52,8 +49,6 @@ void Dialog_Menu::onShowConnectionResult(QAbstractSocket::SocketState state)
 
 void Dialog_Menu::OpenMenu(QTcpSocket* socket)
 {
-    this->setWindowFlag(Qt::SplashScreen, Qt::WindowStaysOnTopHint);
-
     if(socket != nullptr)
     {
         switch(socket->state())
@@ -69,11 +64,7 @@ void Dialog_Menu::OpenMenu(QTcpSocket* socket)
         }
     }
 
-    ui->buttonBoard->hide();
-    ui->buttonClose->show();
-
-    raise();
-    show();
+    exec();
 }
 
 QString* Dialog_Menu:: getName()
@@ -84,11 +75,6 @@ QString* Dialog_Menu:: getName()
 QString* Dialog_Menu::getIp()
 {
     return &mIp;
-}
-
-int* Dialog_Menu::getPort()
-{
-    return &mPort;
 }
 
 void Dialog_Menu::showMessageStatus(QString message)
@@ -106,11 +92,6 @@ void Dialog_Menu::paintEvent(QPaintEvent *)
     painter.drawRect(QRect(0, 0, width(), height()));
 }
 
-void Dialog_Menu::onEditPort(const QString &text)
-{
-    mPort = text.toInt();
-}
-
 void Dialog_Menu::onEditName(const QString & text)
 {
     mName = text;
@@ -123,7 +104,7 @@ void Dialog_Menu::onEditIp(const QString &text)
 
 void Dialog_Menu::onButtonConnectionClicked()
 {
-    if((ui->editName->text() != "") && (ui->editIp->text() != "") && (ui->editPort->text() != "") && ui->editName->text().length() <= 10)
+    if((ui->editName->text() != "") && (ui->editIp->text() != "") && ui->editName->text().length() <= 10)
     {
         emit sig_connection();
     }
@@ -131,7 +112,7 @@ void Dialog_Menu::onButtonConnectionClicked()
     {
         if(ui->editName->text().length() > 10)
         {
-            showMessageStatus("Le pseudo doit faire 10 char ou moins");
+            showMessageStatus("Le pseudo ne doit pas dépasser 10 caractères");
         }
         else
         {
@@ -140,14 +121,9 @@ void Dialog_Menu::onButtonConnectionClicked()
     }
 }
 
-void Dialog_Menu::onButtonBoardClicked()
-{
-    emit sig_showBoard();
-}
-
 void Dialog_Menu::onButtonCloseClicked()
 {
-    hide();
+    accept();
 }
 
 void Dialog_Menu::onButtonJoinGame()

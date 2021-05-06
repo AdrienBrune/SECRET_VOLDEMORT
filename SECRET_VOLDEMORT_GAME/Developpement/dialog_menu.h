@@ -33,10 +33,8 @@ public slots:
 
 private slots:
     void onEditIp(const QString &);
-    void onEditPort(const QString &);
     void onEditName(const QString &);
     void onButtonConnectionClicked();
-    void onButtonBoardClicked();
     void onButtonCloseClicked();
     void onButtonJoinGame();
 
@@ -44,14 +42,12 @@ public:
     void OpenMenu(QTcpSocket* socket);
     QString* getName();
     QString* getIp();
-    int* getPort();
     void showMessageStatus(QString);
 
 protected:
     void paintEvent(QPaintEvent *);
 
 public:
-    int mPort;
     QString mIp;
     QString mName;
 

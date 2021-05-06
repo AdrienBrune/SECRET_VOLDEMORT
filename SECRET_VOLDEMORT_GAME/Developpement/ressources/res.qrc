@@ -68,10 +68,8 @@
         <file>sound_kill.mp3</file>
     </qresource>
     <qresource prefix="/fonts">
-        <file>HyliaSerif.ttf</file>
-        <file>OLDGATEL.TTF</file>
-        <file>BELL.TTF</file>
         <file>Germania.ttf</file>
+        <file>HARRYP.TTF</file>
     </qresource>
     <qresource prefix="/icons">
         <file>notification_off.png</file>

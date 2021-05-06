@@ -60,16 +60,16 @@ void Widget_PopupMessage::paintEvent(QPaintEvent*)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    painter.setOpacity(static_cast<qreal>(mAnimation) / (static_cast<qreal>(MAX_STEP)));
+    painter.setOpacity((static_cast<qreal>(mAnimation) / (static_cast<qreal>(MAX_STEP))) * 0.8);
 
     // Draw banner.
-    painter.setBrush(QBrush(QColor(0x43,0x43,0x43)));
+    painter.setBrush(QBrush(QColor(0x19,0x19,0x19)));
     painter.drawRect(0, height()/3, width(), height()/3);
 
     QRect bounding;
-    QFont fontMask1("Germania", height()/10);
+    QFont fontMask1("Harry P", height()/10);
     QFontMetrics toolMask1(fontMask1);
-    QFont fontMask2("Germania", height()/10);
+    QFont fontMask2("Harry P", height()/10);
     QFontMetrics toolMask2(fontMask2);
 
     // Draw first test mask.
