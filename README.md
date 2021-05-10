@@ -1,7 +1,3 @@
-# SECRET VOLDEMORT
-
-<img src="./SECRET_VOLDEMORT_GAME/Developpement/ressources/Secret_Voldemort_Cover.png" alt="Logo" width="400" height="600">
-
 ## Description
 
 <ul>
@@ -9,6 +5,8 @@
 <li>Version : 1.0.0</li>
 <li>Date : 29/04/2021</li>
 </ul>
+
+<img src="./SECRET_VOLDEMORT_GAME/Developpement/ressources/Secret_Voldemort_Cover.png" alt="Logo" width="200" height="300">
 
 ## Game
 
