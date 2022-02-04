@@ -652,12 +652,15 @@ void Server_CTR::onStartGame()
               onPrint("\t- " + player.name);
         return;
     }
+    ui->buttonStart->setEnabled(false);
 
     initGame();
     mTurnStateSaveMSG = mGame;
 
     mTCP_API->setCommand(CMD_TO_PLAYER_START_GAME);
     mTCP_API->send_MSG(mGame);
+
+    QTimer::singleShot(5000, this, [&]{ui->buttonStart->setEnabled(true);});
 }
 
 void Server_CTR::onAddPlayer(QTcpSocket* socket)
