@@ -8,6 +8,7 @@
 #include "tcp_api.h"
 #include "soundmanager.h"
 #include "widget_popupmessage.h"
+#include "widget_screenwaitingstart.h"
 
 namespace Ui {
 class Controller;
@@ -20,6 +21,7 @@ class Controller : public QMainWindow
 public:
     typedef enum
     {
+        seeWaitingScreen,
         seeGameFinished,
         seePlayerRole,
         seeLawCards,
@@ -85,7 +87,7 @@ private slots:
     void onTimeoutHideVotesReveal();
     void onTimeoutCheckPlayerRole();
     void onTimeoutHideCheckPile();
-    void onTimeoutReturnToGameBoard();
+    void onTimeoutReturnToWaitingScreen();
 
     void onShowMenu();
     void onShowBoard();
@@ -123,6 +125,7 @@ private:
     Widget_ScreenLawCards* wScreenSeeLawCards;
     Widget_ScreenPowerUnlocked* wScreenSeePowerUnlocked;
     Widget_ScreenEndGame* wScreenSeeEndGame;
+    Widget_ScreenWaitingStart* wScreenWaitingStart;
 
     S_VOTE_HANDLER mHandlerVotes;
     S_PARAMETERS mParameters;

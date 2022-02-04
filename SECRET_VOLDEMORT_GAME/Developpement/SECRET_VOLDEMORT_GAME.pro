@@ -1,6 +1,6 @@
 QT       += core gui network
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets multimedia
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets multimedia multimediawidgets
 
 CONFIG += c++11
 
@@ -31,7 +31,8 @@ SOURCES += \
     widget_screencheckrole.cpp \
     widget_screenendgame.cpp \
     widget_screenlawcards.cpp \
-    widget_screenpowerunlocked.cpp
+    widget_screenpowerunlocked.cpp \
+    widget_screenwaitingstart.cpp
 
 HEADERS += \
     controller.h \
@@ -56,7 +57,8 @@ HEADERS += \
     widget_screencheckrole.h \
     widget_screenendgame.h \
     widget_screenlawcards.h \
-    widget_screenpowerunlocked.h
+    widget_screenpowerunlocked.h \
+    widget_screenwaitingstart.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

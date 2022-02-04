@@ -1,5 +1,6 @@
 #include "soundmanager.h"
 #include <QMediaPlaylist>
+#include <QRandomGenerator>
 
 SoundManager::SoundManager(QWidget* parent, bool* enableSounds, bool* enableMusic):
     QWidget(parent),
@@ -9,9 +10,13 @@ SoundManager::SoundManager(QWidget* parent, bool* enableSounds, bool* enableMusi
     music_waitingGame = new QMediaPlayer(this);
     music_waitingGame->setVolume(5);
     playlist_waitingGame = new QMediaPlaylist(this);
-    playlist_waitingGame->addMedia(QUrl("qrc:/musics/music_waitingGame.mp3"));
+    playlist_waitingGame->addMedia(QUrl("qrc:/musics/music_0.mp3"));
+    playlist_waitingGame->addMedia(QUrl("qrc:/musics/music_1.mp3"));
+    playlist_waitingGame->addMedia(QUrl("qrc:/musics/music_2.mp3"));
+    playlist_waitingGame->addMedia(QUrl("qrc:/musics/music_3.mp3"));
     playlist_waitingGame->setPlaybackMode(QMediaPlaylist::PlaybackMode::Loop);
     music_waitingGame->setPlaylist(playlist_waitingGame);
+    playlist_waitingGame->setCurrentIndex(QRandomGenerator::global()->bounded(playlist_waitingGame->mediaCount()));
 
     mSound_drawCard = new QMediaPlayer(this);
     mSound_drawCard->setMedia(QUrl("qrc:/sounds/sound_pioche.wav"));
@@ -66,6 +71,7 @@ void SoundManager::playMusic(SoundManager::E_MUSIC music)
             break;
 
         case SoundManager::E_MUSIC::waitingGame:
+            playlist_waitingGame->setCurrentIndex(QRandomGenerator::global()->bounded(playlist_waitingGame->mediaCount()));
             music_waitingGame->play();
             break;
     }

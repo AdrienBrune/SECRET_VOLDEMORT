@@ -19,6 +19,9 @@
   <property name="windowTitle">
    <string>Secret Voldemort</string>
   </property>
+  <property name="tabShape">
+   <enum>QTabWidget::Triangular</enum>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <property name="spacing">
@@ -49,6 +52,9 @@
    </layout>
   </widget>
   <widget class="QToolBar" name="toolBar">
+   <property name="cursor">
+    <cursorShape>ArrowCursor</cursorShape>
+   </property>
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
@@ -61,7 +67,7 @@
    <property name="iconSize">
     <size>
      <width>30</width>
-     <height>30</height>
+     <height>50</height>
     </size>
    </property>
    <property name="floatable">
@@ -78,6 +84,9 @@
    <addaction name="actionActivateMusic"/>
   </widget>
   <action name="actionSounds">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="ressources/res.qrc">
      <normaloff>:/icons/sound_on.png</normaloff>:/icons/sound_on.png</iconset>

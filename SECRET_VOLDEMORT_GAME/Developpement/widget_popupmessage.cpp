@@ -2,6 +2,7 @@
 #include "ui_widget_popupmessage.h"
 #include <QTimer>
 #include <QPainter>
+#include <QPropertyAnimation>
 
 #define MAX_STEP    10
 #define MIN_STEP    0
@@ -33,7 +34,14 @@ void Widget_PopupMessage::startAnimation()
 {
     mAnimation = MIN_STEP;
     t_animation->start(10);
+
     emit sig_playSound(SoundManager::E_SOUND::ready);
+
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "geometry");
+    animation->setDuration(200);
+    animation->setStartValue(QRect(x(), y()+height(), width(), height()));
+    animation->setEndValue(QRect(x(), y(), width(), height()));
+    animation->start();
 }
 
 void Widget_PopupMessage::onAnimate()
@@ -63,13 +71,13 @@ void Widget_PopupMessage::paintEvent(QPaintEvent*)
     painter.setOpacity((static_cast<qreal>(mAnimation) / (static_cast<qreal>(MAX_STEP))) * 0.8);
 
     // Draw banner.
-    painter.setBrush(QBrush(QColor(0x19,0x19,0x19)));
-    painter.drawRect(0, height()/3, width(), height()/3);
+    painter.setBrush(QBrush(QColor(200,200,200)));
+    painter.drawRect(0, 0, width(), height());
 
     QRect bounding;
-    QFont fontMask1("Harry P", height()/10);
+    QFont fontMask1("Harry Potter", height()/5);
     QFontMetrics toolMask1(fontMask1);
-    QFont fontMask2("Harry P", height()/10);
+    QFont fontMask2("Harry Potter", height()/5);
     QFontMetrics toolMask2(fontMask2);
 
     // Draw first test mask.

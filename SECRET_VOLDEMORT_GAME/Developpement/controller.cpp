@@ -33,11 +33,11 @@ Controller::Controller(QMainWindow *parent):
     ui->toolBar->setMovable(false);
     ui->toolBar->setStyleSheet("QToolBar{border-bottom:3px solid black; background-color:#191919;}"
                                "QToolButton{border:no border;spacing:0px;}"
-                               "QToolButton::hover{background-color:#10202020;}");
+                               "QToolButton::hover{background-color:#2c2c2c;}");
     initDummyGameStatus();
 
     QFontDatabase::addApplicationFont(":/fonts/Germania.ttf");
-    QFontDatabase::addApplicationFont(":/fonts/HARRYP.TTF");
+    QFontDatabase::addApplicationFont(":/fonts/HarryPotter.ttf");
 
     mHandlerVotes.t_displayer = new QTimer(this);
     connect(mHandlerVotes.t_displayer, SIGNAL(timeout()), this, SLOT(onTimeoutHideVotesReveal()));
@@ -50,6 +50,7 @@ Controller::Controller(QMainWindow *parent):
     wScreenSeeLawCards = new Widget_ScreenLawCards(this, &mMSG);
     wScreenSeePowerUnlocked = new Widget_ScreenPowerUnlocked(this);
     wScreenSeeEndGame = new Widget_ScreenEndGame(this, &mMSG);
+    wScreenWaitingStart = new Widget_ScreenWaitingStart(this);
     mSoundManager = new SoundManager(this, &mParameters.sound, &mParameters.music);
     wPopupMessage = new Widget_PopupMessage(wBoard);
 
@@ -81,6 +82,8 @@ Controller::Controller(QMainWindow *parent):
     connect(wPopupMessage, SIGNAL(sig_playSound(SoundManager::E_SOUND)), mSoundManager, SLOT(playSound(SoundManager::E_SOUND)));
 
     emit sig_playMusic(SoundManager::E_MUSIC::waitingGame);
+
+    setScreenInCenter(E_SCREEN::seeWaitingScreen);
 
     show();
 }
@@ -500,9 +503,9 @@ void Controller::onTimeoutHideCheckPile()
     mTCP_API->send_MSG(mMSG);
 }
 
-void Controller::onTimeoutReturnToGameBoard()
+void Controller::onTimeoutReturnToWaitingScreen()
 {
-    setScreenInCenter(E_SCREEN::seeGameBoard);
+    setScreenInCenter(E_SCREEN::seeWaitingScreen);
 }
 
 void Controller::onShowMenu()
@@ -589,7 +592,7 @@ void Controller::notifyPlayerHasToPlay()
     if(mParameters.notifications)
     {
         wPopupMessage->setText("ACTION À RÉALISER");
-        wPopupMessage->setGeometry(0, 0, wBoard->width(), wBoard->height());
+        wPopupMessage->setGeometry(wBoard->width()/4, wBoard->height()-100, wBoard->width()/2, 100);
         wPopupMessage->setWindowFlags(Qt::WindowStaysOnTopHint);
         wPopupMessage->show();
         wPopupMessage->startAnimation();
@@ -646,8 +649,15 @@ void Controller::detectGameEvent(S_MESSAGE* newMSG)
 
 void Controller::setScreenInCenter(Controller::E_SCREEN screen)
 {
+    wScreenWaitingStart->stopVideo();
+
     switch(screen)
     {
+        case E_SCREEN::seeWaitingScreen:
+            wBoard->switchCurrentScreenWith(wScreenWaitingStart);
+            wScreenWaitingStart->startVideo();
+            break;
+
         case E_SCREEN::seeGameBoard:
             wBoard->switchCurrentScreenWith(wBoard->wWidgetCenter);
             break;
@@ -662,7 +672,7 @@ void Controller::setScreenInCenter(Controller::E_SCREEN screen)
 
         case E_SCREEN::seeGameFinished:
             wBoard->switchCurrentScreenWith(wScreenSeeEndGame);
-            QTimer::singleShot(15000, this, SLOT(onTimeoutReturnToGameBoard()));
+            QTimer::singleShot(15000, this, SLOT(onTimeoutReturnToWaitingScreen()));
             break;
 
         case E_SCREEN::seePowerUnlocked:

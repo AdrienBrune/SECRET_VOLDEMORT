@@ -195,7 +195,7 @@ void Widget_Gameboard_Top::paintEvent(QPaintEvent*)
 
     mState = getIndexMessageCorrespondingToSituation();
 
-    QFont font("Harry P");
+    QFont font("Harry Potter");
     font.setPixelSize(ui->label->width()/25);
     font.setBold(true);
     painter.setFont(font);

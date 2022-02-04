@@ -99,7 +99,7 @@ void Widget_FacistTeam::paintEvent(QPaintEvent*)
 
     // Draw labels.
     painter.setPen(QColor(0xFF,0xFF,0xFF));
-    QFont fontName("Harry P");
+    QFont fontName("Harry Potter");
     fontName.setBold(false);
     fontName.setPointSize(15);
 

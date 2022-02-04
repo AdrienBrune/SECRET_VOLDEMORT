@@ -69,7 +69,7 @@
     </qresource>
     <qresource prefix="/fonts">
         <file>Germania.ttf</file>
-        <file>HARRYP.TTF</file>
+        <file>HarryPotter.ttf</file>
     </qresource>
     <qresource prefix="/icons">
         <file>notification_off.png</file>
@@ -80,6 +80,12 @@
         <file>music_on.png</file>
     </qresource>
     <qresource prefix="/musics">
-        <file>music_waitingGame.mp3</file>
+        <file>music_0.mp3</file>
+        <file>music_1.mp3</file>
+        <file>music_2.mp3</file>
+        <file>music_3.mp3</file>
+    </qresource>
+    <qresource prefix="/video">
+        <file>trailer.avi</file>
     </qresource>
 </RCC>
