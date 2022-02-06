@@ -8,7 +8,7 @@
 #include "tcp_api.h"
 #include "soundmanager.h"
 #include "widget_popupmessage.h"
-#include "widget_screenwaitingstart.h"
+#include "widget_screenwaitinggame.h"
 
 namespace Ui {
 class Controller;
@@ -96,8 +96,6 @@ private slots:
 private slots:
     void on_actionSounds_triggered();
     void on_actionNotifications_triggered();
-
-
     void on_actionActivateMusic_triggered();
 
 private:
@@ -114,6 +112,9 @@ private:
     void updateBoard();
     void setScreenInCenter(E_SCREEN screen);
 
+protected:
+    void resizeEvent(QResizeEvent*);
+
 private:
     TCP_API* mTCP_API;
     Dialog_Menu* wMenu;
@@ -125,7 +126,7 @@ private:
     Widget_ScreenLawCards* wScreenSeeLawCards;
     Widget_ScreenPowerUnlocked* wScreenSeePowerUnlocked;
     Widget_ScreenEndGame* wScreenSeeEndGame;
-    Widget_ScreenWaitingStart* wScreenWaitingStart;
+    Widget_ScreenWaitingGame* wScreenWaitingGame;
 
     S_VOTE_HANDLER mHandlerVotes;
     S_PARAMETERS mParameters;

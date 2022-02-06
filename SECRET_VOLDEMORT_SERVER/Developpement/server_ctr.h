@@ -10,6 +10,8 @@
 #include "widget_player.h"
 #include "widget_card.h"
 
+extern char version[];
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class Server_CTR; }
 QT_END_NAMESPACE
@@ -78,6 +80,7 @@ private:
     S_GAME_STATUS mTurnStateSaveMSG;
     QString mMessageLog;
     E_IDENTIFIER mSaveLastPresident;
+    bool mRemoveAllRolesForNextTurn;
 
     S_GAMEBOARD_DISPLAYER mBoardStatusDisplay;
 

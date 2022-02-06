@@ -6,8 +6,12 @@
 #include <QTcpSocket>
 #include "soundmanager.h"
 
+#define GET_VERSION(ver, rev)
+
 #define DEFAULT_PORT    30000
 #define DEFAULT_IP      "127.0.0.1"
+
+extern char version[];
 
 namespace Ui {
 class Menu;

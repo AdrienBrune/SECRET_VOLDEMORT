@@ -50,13 +50,16 @@ Controller::Controller(QMainWindow *parent):
     wScreenSeeLawCards = new Widget_ScreenLawCards(this, &mMSG);
     wScreenSeePowerUnlocked = new Widget_ScreenPowerUnlocked(this);
     wScreenSeeEndGame = new Widget_ScreenEndGame(this, &mMSG);
-    wScreenWaitingStart = new Widget_ScreenWaitingStart(this);
+    wScreenWaitingGame = new Widget_ScreenWaitingGame(this);
     mSoundManager = new SoundManager(this, &mParameters.sound, &mParameters.music);
     wPopupMessage = new Widget_PopupMessage(wBoard);
 
     wMenu->hide();
     wScreenSeePlayerRole->hide();
     wScreenSeeLawCards->hide();
+    wScreenSeeEndGame->hide();
+    wScreenWaitingGame->hide();
+    mSoundManager->hide();
     wScreenSeePowerUnlocked->hide();
     wPopupMessage->hide();
 
@@ -152,7 +155,7 @@ void Controller::gameState(S_MESSAGE MSG)
             break;
 
         default:
-            printf("erreur, commande non reconnue");
+            printf("erreur, commande non reconnue : %d\n", MSG.command);
             break;
     }
 
@@ -311,7 +314,7 @@ void Controller::EVENT_draw()
     emit sig_playSound(SoundManager::E_SOUND::handleCard);
 
     if(mMSG.gameStatus.players[mMSG.identifier].electionRole != E_ELECTION_ROLE::minister)
-        printf("erreur joeur qui a plioché n'est pas président");
+        printf("erreur le joueur qui a pioché n'est pas président");
 
     if(mMSG.gameStatus.players[mMSG.identifier].power == E_POWER::checkPile)
     {
@@ -505,7 +508,8 @@ void Controller::onTimeoutHideCheckPile()
 
 void Controller::onTimeoutReturnToWaitingScreen()
 {
-    setScreenInCenter(E_SCREEN::seeWaitingScreen);
+    if(mMSG.gameStatus.endGame != E_END_GAME::notFinished)
+        setScreenInCenter(E_SCREEN::seeWaitingScreen);
 }
 
 void Controller::onShowMenu()
@@ -592,7 +596,7 @@ void Controller::notifyPlayerHasToPlay()
     if(mParameters.notifications)
     {
         wPopupMessage->setText("ACTION À RÉALISER");
-        wPopupMessage->setGeometry(wBoard->width()/4, wBoard->height()-100, wBoard->width()/2, 100);
+        wPopupMessage->setGeometry(wBoard->width()*3/4-30, wBoard->height()-100, wBoard->width()/4, 80);
         wPopupMessage->setWindowFlags(Qt::WindowStaysOnTopHint);
         wPopupMessage->show();
         wPopupMessage->startAnimation();
@@ -649,13 +653,13 @@ void Controller::detectGameEvent(S_MESSAGE* newMSG)
 
 void Controller::setScreenInCenter(Controller::E_SCREEN screen)
 {
-    wScreenWaitingStart->stopVideo();
+    wScreenWaitingGame->stopVideo();
 
     switch(screen)
     {
         case E_SCREEN::seeWaitingScreen:
-            wBoard->switchCurrentScreenWith(wScreenWaitingStart);
-            wScreenWaitingStart->startVideo();
+            wBoard->switchCurrentScreenWith(wScreenWaitingGame);
+            wScreenWaitingGame->startVideo();
             break;
 
         case E_SCREEN::seeGameBoard:
@@ -682,6 +686,15 @@ void Controller::setScreenInCenter(Controller::E_SCREEN screen)
     }
 
     updateBoard();
+}
+
+void Controller::resizeEvent(QResizeEvent *)
+{
+    if(mParameters.notifications)
+    {
+        wPopupMessage->setGeometry(wBoard->width()*3/4-30, wBoard->height()-100, wBoard->width()/4, 80);
+        wPopupMessage->setWindowFlags(Qt::WindowStaysOnTopHint);
+    }
 }
 
 void Controller::updateBoard()

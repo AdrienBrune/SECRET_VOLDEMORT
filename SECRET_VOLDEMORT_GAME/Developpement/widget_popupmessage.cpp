@@ -60,7 +60,7 @@ void Widget_PopupMessage::stopAnimation()
     t_animation->stop();
     mAnimation = MAX_STEP;
 
-    QTimer::singleShot(1500, [&](){ hide(); });
+    QTimer::singleShot(/*1500*/5000, [&](){ hide(); });
 }
 
 void Widget_PopupMessage::paintEvent(QPaintEvent*)
@@ -68,11 +68,11 @@ void Widget_PopupMessage::paintEvent(QPaintEvent*)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    painter.setOpacity((static_cast<qreal>(mAnimation) / (static_cast<qreal>(MAX_STEP))) * 0.8);
+    //painter.setOpacity((static_cast<qreal>(mAnimation) / (static_cast<qreal>(MAX_STEP))) * 0.8);
 
     // Draw banner.
-    painter.setBrush(QBrush(QColor(200,200,200)));
-    painter.drawRect(0, 0, width(), height());
+    painter.setBrush(QBrush(QColor(180,180,180)));
+    painter.drawRoundedRect(QRect(0, 0, width(), height()), 30, 30);
 
     QRect bounding;
     QFont fontMask1("Harry Potter", height()/5);

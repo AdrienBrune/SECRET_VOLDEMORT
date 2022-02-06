@@ -78,6 +78,10 @@
         <file>sound_on.png</file>
         <file>music_off.png</file>
         <file>music_on.png</file>
+        <file>break.png</file>
+        <file>start.png</file>
+        <file>switch.png</file>
+        <file>switch_p.png</file>
     </qresource>
     <qresource prefix="/musics">
         <file>music_0.mp3</file>
@@ -85,7 +89,12 @@
         <file>music_2.mp3</file>
         <file>music_3.mp3</file>
     </qresource>
-    <qresource prefix="/video">
+    <qresource prefix="/video/win">
         <file>trailer.avi</file>
+        <file>tutorial.avi</file>
+    </qresource>
+    <qresource prefix="/video/mac">
+        <file>trailer.mov</file>
+        <file>tutorial.mov</file>
     </qresource>
 </RCC>
