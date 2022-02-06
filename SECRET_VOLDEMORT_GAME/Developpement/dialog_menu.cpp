@@ -3,6 +3,8 @@
 #include <QDebug>
 #include <QPainter>
 
+char version[15+1];
+
 Dialog_Menu::Dialog_Menu(QWidget *parent) :
     QDialog(parent),
     mIp(DEFAULT_IP),
@@ -24,6 +26,8 @@ Dialog_Menu::Dialog_Menu(QWidget *parent) :
     connect(ui->buttonJoinGame, SIGNAL(clicked()), this, SLOT(onButtonJoinGame()));
 
     ui->buttonJoinGame->hide();
+
+    ui->version->setText(version);
 }
 
 Dialog_Menu::~Dialog_Menu()

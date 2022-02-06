@@ -34,7 +34,7 @@
   <property name="styleSheet">
    <string notr="true"/>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,0,0,0,0,0,0,0">
+  <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,0,0,0,0,0,0,0,0">
    <property name="spacing">
     <number>0</number>
    </property>
@@ -48,7 +48,7 @@
     <number>100</number>
    </property>
    <property name="bottomMargin">
-    <number>20</number>
+    <number>0</number>
    </property>
    <item>
     <spacer name="verticalSpacer_3">
@@ -342,6 +342,24 @@ QPushButton::hover{
       </size>
      </property>
     </spacer>
+   </item>
+   <item>
+    <widget class="QLabel" name="version">
+     <property name="styleSheet">
+      <string notr="true">QLabel{
+	color:#141414;
+}
+QLabel::hover{
+	color:#3c3c3c;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

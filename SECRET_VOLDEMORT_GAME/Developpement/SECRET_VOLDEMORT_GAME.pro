@@ -32,7 +32,7 @@ SOURCES += \
     widget_screenendgame.cpp \
     widget_screenlawcards.cpp \
     widget_screenpowerunlocked.cpp \
-    widget_screenwaitingstart.cpp
+    widget_screenwaitinggame.cpp
 
 HEADERS += \
     controller.h \
@@ -58,7 +58,7 @@ HEADERS += \
     widget_screenendgame.h \
     widget_screenlawcards.h \
     widget_screenpowerunlocked.h \
-    widget_screenwaitingstart.h
+    widget_screenwaitinggame.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -81,7 +81,8 @@ FORMS += \
     widget_popupmessage.ui \
     widget_screencheckrole.ui \
     widget_screenlawcards.ui \
-    widget_screenpowerunlocked.ui
+    widget_screenpowerunlocked.ui \
+    widget_screenwaitinggame.ui
 
 RESOURCES += \
     ressources/res.qrc

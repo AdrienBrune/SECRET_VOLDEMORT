@@ -13,7 +13,7 @@ Widget_Gameboard_Top::Widget_Gameboard_Top(QWidget* parent, S_MESSAGE* MSG):
         "LA PARTIE N'A PAS ENCORE COMMENCÉ",        ///< STATE_GAME_NOT_STARTED          0
         "LE MINISTRE CHOISIT LE DIRECTEUR",         ///< STATE_WAIT_DIRECTOR_NOMINATION  1
         "VEUILLEZ NOMMER UN DIRECTEUR",             ///< STATE_DIRECTOR_SELECTION        2
-        "VOTER POUR L'ELECTION DU DIRECTEUR",       ///< STATE_VOTE_DIRECTOR             3
+        "VOTER POUR L'ÉLECTION DU DIRECTEUR",       ///< STATE_VOTE_DIRECTOR             3
         "LE DIRECTEUR A ÉTÉ ÉLU SUITE AU VOTE",     ///< STATE_GET_VOTE_RESULT           4
         "LE MINISTRE ÉTUDIE LA LOI À VOTER",        ///< STATE_LAW_IS_VOTING_MINISTER    5
         "VEUILLEZ PIOCHER TROIS CARTES DE LOI",     ///< STATE_MINISTER_DRAW             6
