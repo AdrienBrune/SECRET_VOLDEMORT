@@ -1,6 +1,8 @@
 #include "server_ctr.h"
 #include "ui_server_ctr.h"
 
+char version[15+1];
+
 Server_CTR::Server_CTR(QWidget *parent):
     QMainWindow(parent),
     mGame(S_GAME_STATUS()),
@@ -8,6 +10,7 @@ Server_CTR::Server_CTR(QWidget *parent):
     mTCP_API(nullptr),
     mTurnStateSaveMSG(S_GAME_STATUS()),
     mSaveLastPresident(E_IDENTIFIER::ID_none),
+    mRemoveAllRolesForNextTurn(false),
     mBoardStatusDisplay(S_GAMEBOARD_DISPLAYER()),
     ui(new Ui::Server_CTR)
 {
@@ -30,9 +33,11 @@ Server_CTR::Server_CTR(QWidget *parent):
     for(int i = 0; i < 6; i++)
     {
         mGame.board.boardPower[i] = E_POWER::noPower;
-    }  
+    }
     generateNewPile(&mGame.pile);
     mGame.vetoPower = false;
+
+    ui->version->setText(version);
 }
 
 Server_CTR::~Server_CTR()
@@ -152,6 +157,19 @@ void Server_CTR::STATE_startTurn()
         setChancelor(&mGame, E_IDENTIFIER::ID_none);
     }
 
+    // Remove all roles if election tracker has been triggered
+    if(mRemoveAllRolesForNextTurn)
+    {
+        for(int index=0; index < mGame.players.size(); index++)
+        {
+            if(mGame.players[index].electionRole != E_ELECTION_ROLE::president)
+            {
+                mGame.players[index].electionRole = E_ELECTION_ROLE::none;
+            }
+        }
+    }
+    mRemoveAllRolesForNextTurn = false;
+
     mTCP_API->setCommand(CMD_TO_PLAYER_ELECT_CHANCELOR);
     mTCP_API->send_MSG(mGame);
 }
@@ -198,9 +216,10 @@ void Server_CTR::STATE_chancelorVoteResult(S_MESSAGE MSG)
                 break;
 
             case E_VOTE::nein:
-                // The rule says that after three cancelations, the top card of the pile is put on board.
+                // The rule says that after three cancelations, the top card of the pile is put on board and all roles are reset.
                 if(++mGame.electionTracker >= 3)
                 {
+                    mRemoveAllRolesForNextTurn = true;
                     STATE_putLawOnBoard(MSG);
                 }
                 else
@@ -406,6 +425,7 @@ void Server_CTR::STATE_sendMinisterVetoReply(S_MESSAGE MSG)
 
         if(++mGame.electionTracker >= 3)
         {
+            mRemoveAllRolesForNextTurn = true;
             STATE_putLawOnBoard(MSG);
         }
         else
