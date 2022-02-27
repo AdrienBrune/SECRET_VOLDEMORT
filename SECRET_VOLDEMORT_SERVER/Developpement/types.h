@@ -28,19 +28,19 @@ typedef enum
 typedef enum
 {
     notAssigned = 11,
-    liberal = 12,
-    faciste = 13,
-    hitler = 14
+    phenixOrder = 12,
+    deathEaters = 13,
+    voldemort = 14
 
 }E_ROLE;
 
 typedef enum
 {
     none = 15,
-    president = 16,
-    vicePresident = 17,
-    chancelor = 18,
-    viceChancelor = 19
+    minister = 16,
+    viceMinister = 17,
+    director = 18,
+    viceDirector = 19
 
 }E_ELECTION_ROLE;
 
@@ -54,16 +54,16 @@ typedef enum
 
 typedef enum
 {
-    liberalLaw = 23,
-    facisteLaw = 24
+    phenixOrderLaw = 23,
+    deathEatersLaw = 24
 
 }E_CARD;
 
 typedef enum
 {
     blank = 25,
-    yah = 26,
-    nein = 27
+    lumos = 26,
+    nox = 27
 
 }E_VOTE;
 
@@ -72,7 +72,7 @@ typedef enum
     noPower = 28,
     checkPile = 29,
     checkRole = 30,
-    choosePresident = 31,
+    chooseMinister = 31,
     kill = 32,
 
 }E_POWER;
@@ -81,10 +81,10 @@ typedef enum
 {
     notStarted = 33,
     notFinished = 34,
-    liberalWon = 35,
-    facisteWon = 36,
-    hitlerElected = 37,
-    hitlerKilled = 38
+    phenixOrderWon = 35,
+    deathEatersWon = 36,
+    voldemortElected = 37,
+    voldemortKilled = 38
 
 }E_END_GAME;
 
@@ -305,6 +305,42 @@ inline QDataStream & operator>>(QDataStream & stream, S_MESSAGE & MSG)
 #define CMD_TO_PLAYER_PLAYER_JOINED         26
 #define CMD_TO_PLAYER_PLAYER_LEFT_GAME      27
 
+
+// Resource paths.
+
+#define RES_ROLE_VOLDEMORT          "Role_Voldermort.png"
+#define RES_ROLE_LUCIUS             "Role_Lucius.png"
+#define RES_ROLE_BEATRIX            "Role_Beatrix.png"
+#define RES_ROLE_DRAGO              "Role_Drago.png"
+#define RES_ROLE_HARRY              "Role_Harry.png"
+#define RES_ROLE_ALBUS              "Role_Albus.png"
+#define RES_ROLE_RON                "Role_Ron.png"
+#define RES_ROLE_HERMIONE           "Role_Hermione.png"
+#define RES_ROLE_SIRIUS             "Role_Sirius.png"
+#define RES_ROLE_NEVILLE            "Role_Neville.png"
+#define RES_VOLDEMORT               "Voldemort.png"
+#define RES_LUCIUS                  "Lucius.png"
+#define RES_BEATRIX                 "Beatrix.png"
+#define RES_DRAGO                   "Drago.png"
+#define RES_ALLEGIANCE_DEATHEATERS  "Allegeance_Mangemort.png"
+#define RES_ALLEGIANCE_PHENIXORDER  "Allegeance_OrdrePhenix.png"
+#define RES_BOARD_PHENIX            "Plateau_Phenix.png"
+#define RES_BOARD_DEATHEATERS_56    "Plateau_Mangemort_56.png"
+#define RES_BOARD_DEATHEATERS_78    "Plateau_Mangemort_78.png"
+#define RES_BOARD_DEATHEATERS_910   "Plateau_Mangemort_910.png"
+#define RES_DIRECTOR                "Chevalet_Directeur.png"
+#define RES_MINISTER                "Chevalet_Ministre.png"
+#define RES_LAW_DEATHEATERS         "Tuile_Mangemort.png"
+#define RES_LAW_PHENIXORDER         "Tuile_Phenix.png"
+#define RES_LAW_BACK                "Tuile.png"
+#define RES_SECRET_ROLE             "Secret_Role.png"
+#define RES_VOTE_LUMOS              "Vote_Lumos.png"
+#define RES_VOTE_NOX                "Vote_Nox.png"
+
+#define COLOR_DARK                  QColor(24,24,24)
+#define COLOR_LIGHT_DARK            QColor(40,40,40)
+
+
 /*
 QDebug operator<<(QDebug debug, const S_PLAYER & player)
 {
@@ -317,15 +353,15 @@ inline QDebug operator<<(QDebug debug, const S_PLAYER &player)
     QString role, election, state, vote, power, roleName;
     switch(player.role)
     {
-        case E_ROLE::faciste:
+        case E_ROLE::deathEaters:
             role = "Faciste";
             break;
 
-        case E_ROLE::liberal:
+        case E_ROLE::phenixOrder:
             role = "Liberal";
             break;
 
-        case E_ROLE::hitler:
+        case E_ROLE::voldemort:
             role = "Hitler";
             break;
 
@@ -355,11 +391,11 @@ inline QDebug operator<<(QDebug debug, const S_PLAYER &player)
             vote = "Pas de vote";
             break;
 
-        case E_VOTE::yah:
+        case E_VOTE::lumos:
             vote = "Yah";
             break;
 
-        case E_VOTE::nein:
+        case E_VOTE::nox:
             vote = "Nein";
             break;
     }
@@ -370,19 +406,19 @@ inline QDebug operator<<(QDebug debug, const S_PLAYER &player)
             election = "Aucune fonction";
             break;
 
-        case E_ELECTION_ROLE::president:
+        case E_ELECTION_ROLE::minister:
             election = "Président";
             break;
 
-        case E_ELECTION_ROLE::chancelor:
+        case E_ELECTION_ROLE::director:
             election = "Chancelier";
             break;
 
-        case E_ELECTION_ROLE::vicePresident:
+        case E_ELECTION_ROLE::viceMinister:
             election = "Vice Président";
             break;
 
-        case E_ELECTION_ROLE::viceChancelor:
+        case E_ELECTION_ROLE::viceDirector:
             election = "Vice Chancelier";
             break;
     }
@@ -397,7 +433,7 @@ inline QDebug operator<<(QDebug debug, const S_PLAYER &player)
             power = "Check rôle";
             break;
 
-        case E_POWER::choosePresident:
+        case E_POWER::chooseMinister:
             power = "Choix Président";
             break;
 
@@ -504,7 +540,7 @@ inline QDebug operator<<(QDebug debug, const S_BOARD &board)
                 boardPower += " Check rôle - ";
                 break;
 
-            case E_POWER::choosePresident:
+            case E_POWER::chooseMinister:
                 boardPower += " Choix Président - ";
                 break;
 
@@ -549,11 +585,11 @@ inline QDebug operator<<(QDebug debug, const S_GAME_STATUS &game)
     {
         switch(card)
         {
-            case E_CARD::facisteLaw:
+            case E_CARD::deathEatersLaw:
                 pile += " F";
                 break;
 
-            case E_CARD::liberalLaw:
+            case E_CARD::phenixOrderLaw:
                 pile += " L";
                 break;
         }
@@ -562,19 +598,19 @@ inline QDebug operator<<(QDebug debug, const S_GAME_STATUS &game)
 
     switch(game.endGame)
     {
-        case E_END_GAME::facisteWon:
+        case E_END_GAME::deathEatersWon:
             endGame = "Faciste gagnant";
             break;
 
-        case E_END_GAME::liberalWon:
+        case E_END_GAME::phenixOrderWon:
             endGame = "Libéraux gagant";
             break;
 
-        case E_END_GAME::hitlerElected:
+        case E_END_GAME::voldemortElected:
             endGame = "Hitler élu";
             break;
 
-        case E_END_GAME::hitlerKilled:
+        case E_END_GAME::voldemortKilled:
             endGame = "Hitler tué";
             break;
 

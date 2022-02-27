@@ -180,9 +180,9 @@ void Widget_Gameboard_Top::updateWidget()
 void Widget_Gameboard_Top::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
 
     painter.drawPixmap(0, 0, this->width(), this->height(), QPixmap::fromImage(QImage(":/images/border_top.png")));
-    painter.setRenderHint(QPainter::Antialiasing);
 
     if(mMSG->identifier == E_IDENTIFIER::ID_none)
         return;

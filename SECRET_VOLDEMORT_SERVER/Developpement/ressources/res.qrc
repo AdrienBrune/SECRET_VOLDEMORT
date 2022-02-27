@@ -1,21 +1,35 @@
 <RCC>
     <qresource prefix="/images">
+        <file>background_black.png</file>
         <file>background.png</file>
-        <file>background_pioche.png</file>
-        <file>card_nein.png</file>
-        <file>card_yah.png</file>
-        <file>fasciste_card.png</file>
-        <file>liberal_card.png</file>
-        <file>plateau_F_1.png</file>
-        <file>plateau_F_2.png</file>
-        <file>plateau_F_3.png</file>
-        <file>plateau_L.png</file>
-        <file>vote_ok.png</file>
-        <file>welcome_image.png</file>
-        <file>power_foreseen.png</file>
-        <file>power_kill.png</file>
-        <file>power_kill_v.png</file>
-        <file>power_pile.png</file>
-        <file>power_select.png</file>
+        <file>Tuile_Mangemort.png</file>
+        <file>Tuile_Phenix.png</file>
+        <file>Secret_Voldemort_Cover.png</file>
+        <file>background_motif.png</file>
+        <file>Chevalet_Directeur.png</file>
+        <file>Chevalet_Ministre.png</file>
+        <file>Plateau_Mangemort_56.png</file>
+        <file>Plateau_Mangemort_78.png</file>
+        <file>Plateau_Mangemort_910.png</file>
+        <file>Plateau_Phenix.png</file>
+        <file>Role_Albus.png</file>
+        <file>Role_Beatrix.png</file>
+        <file>Role_Drago.png</file>
+        <file>Role_Harry.png</file>
+        <file>Role_Hermione.png</file>
+        <file>Role_Lucius.png</file>
+        <file>Role_Neville.png</file>
+        <file>Role_Ron.png</file>
+        <file>Role_Sirius.png</file>
+        <file>Role_Voldemort.png</file>
+        <file>Role_unknown.png</file>
+        <file>Tuile_back.png</file>
+    </qresource>
+    <qresource prefix="/font">
+        <file>Germania.ttf</file>
+        <file>HarryPotter.ttf</file>
+    </qresource>
+    <qresource prefix="/icon">
+        <file>icone.ico</file>
     </qresource>
 </RCC>

@@ -1,7 +1,22 @@
 #include "server_ctr.h"
 #include "ui_server_ctr.h"
 
+//#define DEBUG
+
 char version[15+1];
+
+QString gameStatusLabel[] = {
+    "en attente",
+    "en cours",
+    "terminée"
+};
+enum
+{
+    WAITING = 0,
+    IN_PROGRESS,
+    FINISHED
+
+};
 
 Server_CTR::Server_CTR(QWidget *parent):
     QMainWindow(parent),
@@ -12,7 +27,9 @@ Server_CTR::Server_CTR(QWidget *parent):
     mSaveLastPresident(E_IDENTIFIER::ID_none),
     mRemoveAllRolesForNextTurn(false),
     mBoardStatusDisplay(S_GAMEBOARD_DISPLAYER()),
-    ui(new Ui::Server_CTR)
+    mAntiSpoil(true),
+    mExpertMode(false),
+    ui(new Ui::Secret_Voldemort_Serveur)
 {
     ui->setupUi(this);
 
@@ -34,10 +51,12 @@ Server_CTR::Server_CTR(QWidget *parent):
     {
         mGame.board.boardPower[i] = E_POWER::noPower;
     }
+    mGame.playerFocus = E_IDENTIFIER::ID_none;
     generateNewPile(&mGame.pile);
     mGame.vetoPower = false;
 
     ui->version->setText(version);
+
 }
 
 Server_CTR::~Server_CTR()
@@ -138,7 +157,7 @@ void Server_CTR::STATE_startTurn()
         E_IDENTIFIER specialPresident = E_IDENTIFIER::ID_none;
         for(int i = 0; i < mGame.players.size(); i++)
         {
-            if(mGame.players[i].electionRole == E_ELECTION_ROLE::president)
+            if(mGame.players[i].electionRole == E_ELECTION_ROLE::minister)
             {
                 specialPresident = static_cast<E_IDENTIFIER>(i);
                 break;
@@ -162,7 +181,7 @@ void Server_CTR::STATE_startTurn()
     {
         for(int index=0; index < mGame.players.size(); index++)
         {
-            if(mGame.players[index].electionRole != E_ELECTION_ROLE::president)
+            if(mGame.players[index].electionRole != E_ELECTION_ROLE::minister)
             {
                 mGame.players[index].electionRole = E_ELECTION_ROLE::none;
             }
@@ -198,11 +217,11 @@ void Server_CTR::STATE_chancelorVoteResult(S_MESSAGE MSG)
         // Everyone voted.
         switch(getVoteResult())
         {
-            case E_VOTE::yah:
-                if(mGame.players[mGame.playerFocus].role == E_ROLE::hitler && mGame.board.boardFaciste >= 3)
+            case E_VOTE::lumos:
+                if(mGame.players[mGame.playerFocus].role == E_ROLE::voldemort && mGame.board.boardFaciste >= 3)
                 {
                     onPrint("Fin de la partie : Hitler élu Chancelier");
-                    mGame.endGame = E_END_GAME::hitlerElected;
+                    mGame.endGame = E_END_GAME::voldemortElected;
                     mTCP_API->setCommand(CMD_TO_PLAYER_END_GAME);
                     QTimer::singleShot(2000, this, [&](){ mTCP_API->send_MSG(mGame); });
                 }
@@ -215,7 +234,7 @@ void Server_CTR::STATE_chancelorVoteResult(S_MESSAGE MSG)
                 }
                 break;
 
-            case E_VOTE::nein:
+            case E_VOTE::nox:
                 // The rule says that after three cancelations, the top card of the pile is put on board and all roles are reset.
                 if(++mGame.electionTracker >= 3)
                 {
@@ -237,7 +256,7 @@ void Server_CTR::STATE_chancelorVoteResult(S_MESSAGE MSG)
         mGame.playerFocus = E_IDENTIFIER::ID_none;
         for(int i = 0; i < mGame.players.size(); i++)
         {
-            if(mGame.players[i].vote == E_VOTE::yah || mGame.players[i].vote == E_VOTE::nein)
+            if(mGame.players[i].vote == E_VOTE::lumos || mGame.players[i].vote == E_VOTE::nox)
             {
                 mGame.players[i].vote = E_VOTE::blank;
             }
@@ -270,11 +289,11 @@ void Server_CTR::STATE_putLawOnBoard(S_MESSAGE)
 
     switch(card)
     {
-        case E_CARD::facisteLaw:
+        case E_CARD::deathEatersLaw:
             mGame.board.boardFaciste++;
             // Check for power.
             mGame.players[getPresidentIdentifier(mGame)].power = mGame.board.boardPower[mGame.board.boardFaciste - 1];
-            if(mGame.board.boardPower[mGame.board.boardFaciste - 1] == E_POWER::choosePresident)
+            if(mGame.board.boardPower[mGame.board.boardFaciste - 1] == E_POWER::chooseMinister)
             {
                 mSaveLastPresident = getPresidentIdentifier(mGame);
             }
@@ -288,7 +307,7 @@ void Server_CTR::STATE_putLawOnBoard(S_MESSAGE)
             }
             break;
 
-        case E_CARD::liberalLaw:
+        case E_CARD::phenixOrderLaw:
             mGame.board.boardLiberal++;
             break;
     }
@@ -303,7 +322,7 @@ void Server_CTR::STATE_putLawOnBoard(S_MESSAGE)
     if(mGame.board.boardFaciste >= 6)
     {
         onPrint("Fin de la partie : 6 lois facistes posées");
-        mGame.endGame = E_END_GAME::facisteWon;
+        mGame.endGame = E_END_GAME::deathEatersWon;
         mTCP_API->setCommand(CMD_TO_PLAYER_END_GAME);
         mTCP_API->send_MSG(mGame);
         return;
@@ -312,7 +331,7 @@ void Server_CTR::STATE_putLawOnBoard(S_MESSAGE)
     if(mGame.board.boardLiberal >= 5)
     {
         onPrint("Fin de la partie : 5 lois libérales posées");
-        mGame.endGame = E_END_GAME::liberalWon;
+        mGame.endGame = E_END_GAME::phenixOrderWon;
         mTCP_API->setCommand(CMD_TO_PLAYER_END_GAME);
         mTCP_API->send_MSG(mGame);
         return;
@@ -353,9 +372,9 @@ void Server_CTR::STATE_powerKillPlayer(S_MESSAGE MSG)
     killPlayer(MSG.gameStatus.playerFocus);
 
     // If the player killed is Hitler, game finished.
-    if(mGame.players[MSG.gameStatus.playerFocus].role == E_ROLE::hitler)
+    if(mGame.players[MSG.gameStatus.playerFocus].role == E_ROLE::voldemort)
     {
-        mGame.endGame = E_END_GAME::hitlerKilled;
+        mGame.endGame = E_END_GAME::voldemortKilled;
         mTCP_API->setCommand(CMD_TO_PLAYER_END_GAME);
         mTCP_API->send_MSG(mGame);
         return;
@@ -400,7 +419,7 @@ void Server_CTR::STATE_threeVoteCanceled()
     if(++mGame.board.boardFaciste >= 6)
     {
         onPrint("Fin de la partie : 6 lois facistes posées");
-        mGame.endGame = E_END_GAME::facisteWon;
+        mGame.endGame = E_END_GAME::deathEatersWon;
         mTCP_API->setCommand(CMD_TO_PLAYER_END_GAME);
         mTCP_API->send_MSG(mGame);
         return;
@@ -472,6 +491,33 @@ void Server_CTR::initGame()
 #endif
 }
 
+void Server_CTR::initDummyGame()
+{
+    while(!mGame.players.isEmpty())
+        mGame.players.removeLast();
+
+    for(int i = 0; i < 7; i++)
+    {
+        S_PLAYER player = { E_PLAYER_STATUS::alive, nullptr, static_cast<E_IDENTIFIER>(i), QString("Player_%1").arg(i), E_ROLE::notAssigned, E_ROLE_NAME::noOne, E_ELECTION_ROLE::none, E_VOTE::blank, E_POWER::noPower};
+        mGame.players.append(player);
+    }
+
+    initPlayers(&mGame);
+    initRole(&mGame);
+    initBoard(&mGame);
+    mGame.board.boardFaciste = 6;
+    mGame.board.boardLiberal = 5;
+    generateNewPile(&mGame.pile);
+    mGame.endGame = E_END_GAME::notFinished;
+    mGame.playerFocus = E_IDENTIFIER::ID_player2;
+    mGame.electionTracker = 1;
+    mGame.vetoPower = true;
+
+    // clean log.
+    mMessageLog = "";
+    refreshGameStatusDisplay();
+}
+
 void Server_CTR::refreshPlayerStatus(S_MESSAGE MSG)
 {
     if(MSG.command == CMD_TO_SERVER_JOIN_GAME)
@@ -520,12 +566,12 @@ E_VOTE Server_CTR::getVoteResult()
 
     for(const S_PLAYER &player : mGame.players)
     {
-        if(player.vote == E_VOTE::yah)
+        if(player.vote == E_VOTE::lumos)
         {
             lumos++;
             continue;
         }
-        if(player.vote == E_VOTE::nein)
+        if(player.vote == E_VOTE::nox)
         {
             nox++;
             continue;
@@ -540,11 +586,11 @@ E_VOTE Server_CTR::getVoteResult()
 
     if(lumos > nox)
     {
-        return E_VOTE::yah;
+        return E_VOTE::lumos;
     }
     else
     {
-        return E_VOTE::nein;
+        return E_VOTE::nox;
     }
 }
 
@@ -578,50 +624,52 @@ void Server_CTR::refreshGameStatusDisplay()
     while(!mBoardStatusDisplay.players.isEmpty())
         delete mBoardStatusDisplay.players.takeLast();
 
+    if(mBoardStatusDisplay.boardMangemort)
+    {
+        ui->layout_boardMangemort->removeWidget(mBoardStatusDisplay.boardMangemort);
+        delete mBoardStatusDisplay.boardMangemort;
+
+    }
+    if(mBoardStatusDisplay.boardPhenixOrder)
+    {
+        ui->layout_boardPhenixOrder->removeWidget(mBoardStatusDisplay.boardPhenixOrder);
+        delete mBoardStatusDisplay.boardPhenixOrder;
+    }
+
     // Refresh game status.
     switch(mGame.endGame)
     {
         case E_END_GAME::notStarted:
-            ui->edit_gameStatus->setText("partie non commencée");
+            ui->input_gameStatus->setText(gameStatusLabel[WAITING]);
             break;
 
         case E_END_GAME::notFinished:
-            ui->edit_gameStatus->setText("partie en cours");
+            ui->input_gameStatus->setText(gameStatusLabel[IN_PROGRESS]);
             break;
 
         default:
-            ui->edit_gameStatus->setText("partie terminée");
+            ui->input_gameStatus->setText(gameStatusLabel[FINISHED]);
             break;
-    }
-
-    if(mPlayerFocus != E_IDENTIFIER::ID_none)
-    {
-        ui->edit_playerFocus->setText(QString("%1").arg(mPlayerFocus));
     }
 
     // Pile refresh.
     for(E_CARD card : mGame.pile)
     {
-        mBoardStatusDisplay.pile.append(new Widget_Card(this, card));
-        ui->layoutPile->addWidget(mBoardStatusDisplay.pile.last());
+        mBoardStatusDisplay.pile.prepend(new Widget_Card(this, card, &mAntiSpoil));
+        ui->layoutPile->addWidget(mBoardStatusDisplay.pile.first());
     }
 
-    // Boards refresh.
-    for(int i = 0; i < mGame.board.boardFaciste; i++)
-    {
-        mBoardStatusDisplay.boardFaciste.append(new Widget_Card(this, E_CARD::facisteLaw));
-        ui->layoutBoardFaciste->addWidget(mBoardStatusDisplay.boardFaciste.last());
-    }
-    for(int i = 0; i < mGame.board.boardLiberal; i++)
-    {
-        mBoardStatusDisplay.boardLiberal.append(new Widget_Card(this, E_CARD::liberalLaw));
-        ui->layoutBoardLiberal->addWidget(mBoardStatusDisplay.boardLiberal.last());
-    }
+    mBoardStatusDisplay.boardMangemort = new Widget_Board(this, &mGame, Widget_Board::E_BOARD_TYPE::Mangemort);
+    mBoardStatusDisplay.boardPhenixOrder = new Widget_Board(this, &mGame, Widget_Board::E_BOARD_TYPE::PhenixOrder);
+
+    ui->layout_boardMangemort->addWidget(mBoardStatusDisplay.boardMangemort);
+    ui->layout_boardPhenixOrder->addWidget(mBoardStatusDisplay.boardPhenixOrder);
+
 
     // Players refresh.
     for(const S_PLAYER &player : mGame.players)
     {
-        mBoardStatusDisplay.players.append(new Widget_Player(this, player));
+        mBoardStatusDisplay.players.append(new Widget_Player(this, player, &mGame, &mAntiSpoil, &mExpertMode));
         ui->layoutPlayers->addWidget(mBoardStatusDisplay.players.last());
     }
 }
@@ -664,12 +712,16 @@ void Server_CTR::copyGameStatusDisplayedInto(S_GAME_STATUS* game)
 
 void Server_CTR::onStartGame()
 {
+#ifdef DEBUG
+    initDummyGame();
+#else
     if(mGame.players.size() < 5)
     {
-        onPrint("Nombre de joueurs insuffisant pour lancer une partie\n"
-              "\tNombre de joueurs actuellement connectés : " + QString(mGame.players.size()));
         for(const S_PLAYER &player : mGame.players)
-              onPrint("\t- " + player.name);
+              onPrint("\t+ " + player.name);
+        onPrint(QString("Nombre de joueurs insuffisant pour lancer une partie\n"
+                        "Nombre de joueurs actuellement connectés : %1").arg(mGame.players.size()));
+
         return;
     }
     ui->buttonStart->setEnabled(false);
@@ -681,6 +733,7 @@ void Server_CTR::onStartGame()
     mTCP_API->send_MSG(mGame);
 
     QTimer::singleShot(5000, this, [&]{ui->buttonStart->setEnabled(true);});
+#endif
 }
 
 void Server_CTR::onAddPlayer(QTcpSocket* socket)
@@ -714,42 +767,35 @@ void Server_CTR::onRemovePlayer(QTcpSocket* socket)
         return;
     }
 
-    // Get number of players.
-    quint8 numberPlayers = 0;
-    for(const S_PLAYER &player : mGame.players)
+    // Increment Minister if necessary.
+    E_IDENTIFIER minister = E_IDENTIFIER::ID_none, director = E_IDENTIFIER::ID_none;
+    if(mGame.players[identifier].electionRole == E_ELECTION_ROLE::minister)
     {
-        numberPlayers++;
-    }
-
-    // Increment President if necessary.
-    E_IDENTIFIER president = E_IDENTIFIER::ID_none, chancelor = E_IDENTIFIER::ID_none;
-    if(mGame.players[identifier].electionRole == E_ELECTION_ROLE::president)
-    {
-        president = identifier;
+        minister = identifier;
 
         do
         {
-            if(++president > mGame.players.size() - 1)
-                president = E_IDENTIFIER::ID_player1;
+            if(++minister > mGame.players.size() - 1)
+                minister = E_IDENTIFIER::ID_player1;
 
-        }while(mGame.players[president].status != E_PLAYER_STATUS::alive);
+        }while(mGame.players[minister].status != E_PLAYER_STATUS::alive);
 
-        mGame.players[president].electionRole = E_ELECTION_ROLE::president;
+        mGame.players[minister].electionRole = E_ELECTION_ROLE::minister;
     }
 
-    // Increment Chancelor if necessary.
-    if(mGame.players[identifier].electionRole == E_ELECTION_ROLE::chancelor)
+    // Increment Director if necessary.
+    if(mGame.players[identifier].electionRole == E_ELECTION_ROLE::director)
     {
-        chancelor = identifier;
+        director = identifier;
 
         do
         {
-            if(++chancelor > mGame.players.size() - 1)
-                chancelor = E_IDENTIFIER::ID_player1;
+            if(++director > mGame.players.size() - 1)
+                director = E_IDENTIFIER::ID_player1;
 
-        }while(mGame.players[chancelor].status != E_PLAYER_STATUS::alive);
+        }while(mGame.players[director].status != E_PLAYER_STATUS::alive);
 
-        mGame.players[chancelor].electionRole = E_ELECTION_ROLE::chancelor;
+        mGame.players[director].electionRole = E_ELECTION_ROLE::director;
     }
 
     onPrint(mGame.players[identifier].name + " a quitté la partie");
@@ -762,7 +808,7 @@ void Server_CTR::onHidePlayerVotes()
 {
     for(int i = 0; i < mGame.players.size(); i++)
     {
-        if(mGame.players[i].vote == E_VOTE::yah || mGame.players[i].vote == E_VOTE::nein)
+        if(mGame.players[i].vote == E_VOTE::lumos || mGame.players[i].vote == E_VOTE::nox)
         {
             mGame.players[i].vote = E_VOTE::blank;
         }
@@ -771,8 +817,7 @@ void Server_CTR::onHidePlayerVotes()
 
 void Server_CTR::onPrint(QString message)
 {
-    mMessageLog += message + "\n";
-    ui->log->setReadOnly(true);
+    mMessageLog = QString("%1\n%2").arg(message, mMessageLog);
     ui->log->setText(mMessageLog);
 }
 
@@ -788,10 +833,10 @@ void Server_CTR::on_buttonRestartTurn_clicked()
         mGame.players[i].power = E_POWER::noPower;
         mGame.players[i].vote = E_VOTE::blank;
     }
-    // Remove player Chancelor status.
+    // Remove player Director status.
     for(int i = 0; i < mGame.players.size(); i++)
     {
-        if(mGame.players[i].electionRole == E_ELECTION_ROLE::chancelor)
+        if(mGame.players[i].electionRole == E_ELECTION_ROLE::director)
         {
             mGame.players[i].electionRole = E_ELECTION_ROLE::none;
         }
@@ -800,12 +845,12 @@ void Server_CTR::on_buttonRestartTurn_clicked()
     bool MinisterFound = false;
     for(const S_PLAYER & player : mGame.players)
     {
-        if(player.electionRole == E_ELECTION_ROLE::president)
+        if(player.electionRole == E_ELECTION_ROLE::minister)
             MinisterFound = true;
     }
 
     if(MinisterFound == false)
-        mGame.players[0].electionRole = E_ELECTION_ROLE::president;
+        mGame.players[0].electionRole = E_ELECTION_ROLE::minister;
 
     refreshGameStatusDisplay();
 
@@ -824,10 +869,10 @@ void Server_CTR::on_buttonStartTurnWithInputs_clicked()
     {
         mGame.players[i].power = E_POWER::noPower;
     }
-    // Remove player Chancelor status.
+    // Remove player Director status.
     for(int i = 0; i < mGame.players.size(); i++)
     {
-        if(mGame.players[i].electionRole == E_ELECTION_ROLE::chancelor)
+        if(mGame.players[i].electionRole == E_ELECTION_ROLE::director)
         {
             mGame.players[i].electionRole = E_ELECTION_ROLE::none;
         }
@@ -837,4 +882,25 @@ void Server_CTR::on_buttonStartTurnWithInputs_clicked()
 
     mTCP_API->setCommand(CMD_TO_PLAYER_ELECT_CHANCELOR);
     mTCP_API->send_MSG(mGame);
+}
+
+void Server_CTR::on_buttonAntiSpoil_stateChanged(int toggle)
+{
+    mAntiSpoil = toggle;
+    refreshGameStatusDisplay();
+}
+
+void Server_CTR::on_buttonExpertMode_stateChanged(int toggle)
+{
+    mExpertMode = toggle;
+    refreshGameStatusDisplay();
+}
+
+void Server_CTR::paintEvent(QPaintEvent*)
+{
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+
+    painter.setBrush(QBrush(COLOR_DARK));
+    painter.drawRect(QRect(0,0,width(),height()));
 }

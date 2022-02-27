@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout_3" stretch="1,0">
    <property name="spacing">
     <number>0</number>
@@ -208,12 +211,13 @@ QPushButton::hover{
           <string notr="true">QPushButton{
 	border-image:url(:/icons/switch.png);
 }
+QPushButton::hover{
+	border-image:url(:/icons/switch_h.png);
+}
 QPushButton::pressed{
 	border-image:url(:/icons/switch_p.png);
 }
-QPushButton::hover{
-	background-color:#2c2c2c;
-}</string>
+</string>
          </property>
          <property name="text">
           <string/>

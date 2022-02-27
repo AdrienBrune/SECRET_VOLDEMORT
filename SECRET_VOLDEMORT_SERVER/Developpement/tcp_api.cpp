@@ -18,28 +18,34 @@ void TCP_API::newPlayer()
     connect(socket, SIGNAL(readyRead()), this, SLOT(receive_MSG()));
     connect(socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(socketEvent(QAbstractSocket::SocketState)));
 
-    sig_playerConnection(socket);
+    emit sig_playerConnection(socket);
 }
 
 void TCP_API::socketEvent(QAbstractSocket::SocketState state)
 {
-    QTcpSocket* socket = nullptr;
+    QTcpSocket* socket = static_cast<QTcpSocket*>(QObject::sender());
+    QStringList events = {
+        "UnconnectedState",
+        "HostLookupState",
+        "ConnectingState",
+        "ConnectedState",
+        "BoundState",
+        "ClosingState",
+        "ListeningState",
+        "unknown"
+    };
 
-    switch(state)
+    for(S_PLAYER player : mMSG.gameStatus.players)
     {
-        case QAbstractSocket::UnconnectedState:
-            emit sig_print("SOCKET : unconnected");
-            socket = static_cast<QTcpSocket*>(QObject::sender());
-            emit sig_playerDisconnection(socket);
-            break;
+        if(player.socket == socket)
+        {
+            emit sig_print("Socket event (" + player.name + ") : " + events[state < (events.size()-1) ? state : (events.size()-1)]);
+        }
+    }
 
-        case QAbstractSocket::ClosingState:
-            emit sig_print("SOCKET : closing state");
-            break;
-
-        default:
-            emit sig_print("SOCKET : erreur");
-            break;
+    if(state == QAbstractSocket::UnconnectedState)
+    { 
+        emit sig_playerDisconnection(socket);
     }
 }
 
@@ -71,7 +77,7 @@ void TCP_API::send_MSG(S_GAME_STATUS game)
         stream << mMSG;
     }
 
-    sig_print("[ENV] " + getCommandString(mMSG.command));
+    emit sig_print("[ENV] " + getCommandString(mMSG.command));
 }
 
 void TCP_API::send_MSG(S_MESSAGE MSG, QTcpSocket* socket)

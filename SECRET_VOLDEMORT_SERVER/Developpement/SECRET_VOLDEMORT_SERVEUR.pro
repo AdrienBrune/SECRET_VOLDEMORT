@@ -13,6 +13,7 @@ SOURCES += \
     server_ctr.cpp \
     tcp_api.cpp \
     util_functions.cpp \
+    widget_board.cpp \
     widget_card.cpp \
     widget_player.cpp
 
@@ -21,11 +22,13 @@ HEADERS += \
     tcp_api.h \
     types.h \
     util_functions.h \
+    widget_board.h \
     widget_card.h \
     widget_player.h
 
 FORMS += \
     server_ctr.ui \
+    widget_board.ui \
     widget_card.ui \
     widget_player.ui
 

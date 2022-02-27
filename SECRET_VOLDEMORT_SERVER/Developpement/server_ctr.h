@@ -9,11 +9,12 @@
 #include "tcp_api.h"
 #include "widget_player.h"
 #include "widget_card.h"
+#include "widget_board.h"
 
 extern char version[];
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class Server_CTR; }
+namespace Ui { class Secret_Voldemort_Serveur; }
 QT_END_NAMESPACE
 
 class Server_CTR : public QMainWindow
@@ -27,6 +28,8 @@ private:
         QList<Widget_Card*> pile;
         QList<Widget_Card*> boardFaciste;
         QList<Widget_Card*> boardLiberal;
+        Widget_Board* boardMangemort;
+        Widget_Board* boardPhenixOrder;
 
     }S_GAMEBOARD_DISPLAYER;
 
@@ -55,6 +58,7 @@ private:
 
 private:
     void initGame();
+    void initDummyGame();
     void refreshPlayerStatus(S_MESSAGE MSG);
     bool addPlayerVote(E_IDENTIFIER identifier);
     E_VOTE getVoteResult();
@@ -69,9 +73,13 @@ private slots:
     void onRemovePlayer(QTcpSocket* socket);
     void onHidePlayerVotes();
     void onPrint(QString message);
-
     void on_buttonRestartTurn_clicked();
     void on_buttonStartTurnWithInputs_clicked();
+    void on_buttonAntiSpoil_stateChanged(int arg1);
+    void on_buttonExpertMode_stateChanged(int arg1);
+
+protected:
+    void paintEvent(QPaintEvent*);
 
 private:
     S_GAME_STATUS mGame;
@@ -84,8 +92,11 @@ private:
 
     S_GAMEBOARD_DISPLAYER mBoardStatusDisplay;
 
+    bool mAntiSpoil;
+    bool mExpertMode;
+
 private:
-    Ui::Server_CTR* ui;
+    Ui::Secret_Voldemort_Serveur* ui;
 };
 
 #endif // SERVER_CTR_H

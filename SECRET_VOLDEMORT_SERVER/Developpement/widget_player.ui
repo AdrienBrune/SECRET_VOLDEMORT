@@ -7,213 +7,444 @@
     <x>0</x>
     <y>0</y>
     <width>200</width>
-    <height>200</height>
+    <height>280</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>200</width>
-    <height>200</height>
+    <height>280</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>200</width>
-    <height>200</height>
+    <height>280</height>
    </size>
+  </property>
+  <property name="cursor">
+   <cursorShape>ArrowCursor</cursorShape>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>15</number>
+   </property>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="spacing">
+      <number>10</number>
+     </property>
      <item>
-      <widget class="QLabel" name="edit_name">
-       <property name="font">
-        <font>
-         <family>Sitka</family>
-         <pointsize>14</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
+      <layout class="QHBoxLayout" name="layout_inputs">
+       <property name="spacing">
+        <number>5</number>
        </property>
-       <property name="text">
-        <string>Adibou</string>
+       <property name="rightMargin">
+        <number>0</number>
        </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="edit_vote">
        <item>
-        <property name="text">
-         <string>Aucun vote</string>
-        </property>
+        <layout class="QVBoxLayout" name="layout_left">
+         <property name="spacing">
+          <number>5</number>
+         </property>
+         <item>
+          <widget class="QComboBox" name="edit_electionRole">
+           <property name="styleSheet">
+            <string notr="true">QComboBox
+{
+	color:#181818;
+    background-color: #FFFFFF;
+    border-color: #3c3c3c;
+    border-width: 1px;
+    border-style: solid;
+	height:20px;
+}
+
+QComboBox::drop-down {
+	subcontrol-origin: padding;
+	subcontrol-position: top right;
+	width: 20px;
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+}
+
+QComboBox QAbstractItemView{
+border:no border;
+	background-color:#3c3c3c;
+	color:#FFFFFF;
+ 
+	selection-background-color:#11FFFFFF;
+}
+
+</string>
+           </property>
+           <property name="editable">
+            <bool>false</bool>
+           </property>
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
+           <item>
+            <property name="text">
+             <string>NA</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Ministre</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Vice Min.</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Directeur</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Vice Dir.</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
-        <property name="text">
-         <string>Yah</string>
-        </property>
+        <layout class="QVBoxLayout" name="layout_right">
+         <property name="spacing">
+          <number>5</number>
+         </property>
+         <item>
+          <widget class="QComboBox" name="edit_vote">
+           <property name="styleSheet">
+            <string notr="true">QComboBox
+{
+	color:#181818;
+    background-color: #FFFFFF;
+    border-color: #3c3c3c;
+    border-width: 1px;
+    border-style: solid;
+	height:20px;
+}
+
+QComboBox::drop-down {
+	subcontrol-origin: padding;
+	subcontrol-position: top right;
+	width: 20px;
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+}
+
+QComboBox QAbstractItemView{
+border:no border;
+	background-color:#3c3c3c;
+	color:#FFFFFF;
+ 
+	selection-background-color:#11FFFFFF;
+}
+
+</string>
+           </property>
+           <property name="editable">
+            <bool>false</bool>
+           </property>
+           <item>
+            <property name="text">
+             <string>Vote</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Oui</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Non</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="edit_power">
+           <property name="styleSheet">
+            <string notr="true">QComboBox
+{
+	color:#181818;
+    background-color: #FFFFFF;
+    border-color: #3c3c3c;
+    border-width: 1px;
+    border-style: solid;
+	height:20px;
+}
+
+QComboBox::drop-down {
+	subcontrol-origin: padding;
+	subcontrol-position: top right;
+	width: 20px;
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+}
+
+QComboBox QAbstractItemView{
+border:no border;
+	background-color:#3c3c3c;
+	color:#FFFFFF;
+ 
+	selection-background-color:#11FFFFFF;
+}
+
+</string>
+           </property>
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
+           <item>
+            <property name="text">
+             <string>Aucun</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Pile</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Check</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Directeur</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Execution</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Execution</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
        </item>
-       <item>
-        <property name="text">
-         <string>Nein</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="edit_power">
-       <item>
-        <property name="text">
-         <string>Aucun pouvoir</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>check pile</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>check role</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Choix du Président</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Execution</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Vote d'execution</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="edit_electionRole">
-       <item>
-        <property name="text">
-         <string>Non assigné</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Président</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>vice Président</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Chancelier</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>vice Chancelier</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="edit_role">
-       <item>
-        <property name="text">
-         <string>Non assigné</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Libéral</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Faciste</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Hitler</string>
-        </property>
-       </item>
-      </widget>
+      </layout>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="spacing">
+        <number>0</number>
+       </property>
        <item>
-        <widget class="QLabel" name="label_5">
+        <widget class="QLabel" name="label">
+         <property name="styleSheet">
+          <string notr="true">QLabel{
+	background-color:rgba(250,250,250,220);
+	color:white;
+	border-top-left-radius: 4px;
+	border-bottom-left-radius: 4px;
+}</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="edit_name">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+          <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
          <property name="font">
           <font>
-           <family>Modern</family>
-           <pointsize>10</pointsize>
+           <family>Sitka Small</family>
+           <pointsize>12</pointsize>
+           <weight>50</weight>
+           <bold>false</bold>
           </font>
          </property>
+         <property name="styleSheet">
+          <string notr="true">QLabel{
+	background-color:rgba(250,250,250,220);
+	color:#181818;
+}</string>
+         </property>
          <property name="text">
-          <string>id : </string>
+          <string>Adibou</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignBottom|Qt::AlignRight|Qt::AlignTrailing</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="space">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <family>Sitka Small</family>
+           <pointsize>8</pointsize>
+           <weight>50</weight>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QLabel{
+	background-color:rgba(250,250,250,220);
+	color:#181818;
+}</string>
+         </property>
+         <property name="text">
+          <string>[</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignBottom|Qt::AlignHCenter</set>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLabel" name="edit_id">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="font">
           <font>
-           <family>Modern</family>
-           <pointsize>10</pointsize>
+           <family>Sitka Small</family>
+           <pointsize>8</pointsize>
            <weight>50</weight>
            <italic>false</italic>
            <bold>false</bold>
           </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QLabel{
+	background-color:rgba(250,250,250,220);
+	color:#181818;
+}</string>
          </property>
          <property name="text">
           <string>0</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          <set>Qt::AlignBottom|Qt::AlignHCenter</set>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="edit_socket">
+        <widget class="QLabel" name="space_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="font">
           <font>
-           <family>Modern</family>
-           <pointsize>10</pointsize>
+           <family>Sitka Small</family>
+           <pointsize>8</pointsize>
            <weight>50</weight>
-           <italic>false</italic>
            <bold>false</bold>
           </font>
          </property>
+         <property name="styleSheet">
+          <string notr="true">QLabel{
+	background-color:rgba(250,250,250,220);
+	color:#181818;
+}</string>
+         </property>
          <property name="text">
-          <string>0xFFE215</string>
+          <string>]</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="styleSheet">
+          <string notr="true">QLabel{
+	background-color:rgba(250,250,250,220);
+	color:white;
+	border-top-right-radius: 4px;
+	border-bottom-right-radius: 4px;
+}</string>
+         </property>
+         <property name="text">
+          <string/>
          </property>
         </widget>
        </item>
       </layout>
      </item>
     </layout>
+   </item>
+   <item alignment="Qt::AlignHCenter">
+    <widget class="QLabel" name="edit_socket">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="font">
+      <font>
+       <family>Sitka Small</family>
+       <pointsize>6</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignBottom|Qt::AlignRight|Qt::AlignTrailing</set>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

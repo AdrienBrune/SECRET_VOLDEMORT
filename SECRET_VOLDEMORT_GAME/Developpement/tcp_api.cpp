@@ -24,7 +24,7 @@ void TCP_API::connectToServer()
         mSocket->close();
 
         mSocket = new QTcpSocket(this);
-        connect(mSocket,SIGNAL(connected()),this,SLOT(connection()));
+        connect(mSocket, SIGNAL(connected()), this, SLOT(connection()));
         connect(mSocket, SIGNAL(disconnected()), SLOT(disconnected()));
         connect(mSocket, SIGNAL(readyRead()), this, SLOT(receive_MSG()));
     }

@@ -48,6 +48,8 @@ void Widget_Gameboard_Center::updateWidget()
     wPile->update();
     wLiberalBoard->update();
     wFacisteBoard->update();
+
+    wPile->isEnabled() ? wPile->setToolTip("") : wPile->setToolTip("Répartition de départ :\n 11 Mangemort\n 6 Ordre du Phénix");
 }
 
 void Widget_Gameboard_Center::startPileAnimation()

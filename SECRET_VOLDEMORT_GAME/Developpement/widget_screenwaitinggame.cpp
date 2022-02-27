@@ -1,6 +1,8 @@
 #include "widget_screenwaitinggame.h"
 #include "ui_widget_screenwaitinggame.h"
 
+#include <QFrame>
+
 #define TUTORIAL_DURATION_SEC 168
 
 Widget_ScreenWaitingGame::Widget_ScreenWaitingGame(QWidget *parent) :
@@ -93,8 +95,7 @@ void Widget_ScreenWaitingGame::paintEvent(QPaintEvent*)
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    painter.setBrush(QBrush("#191919"));
-    painter.drawRect(0, 0, width(), height());
+    painter.fillRect(QRect(0,0,width(),height()), QBrush(QColor(25,25,25)));
 }
 
 void Widget_ScreenWaitingGame::resizeEvent(QResizeEvent*)

@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QPainter>
+#include <QEvent>
 #include "types.h"
 
 namespace Ui {
@@ -14,7 +15,7 @@ class Widget_Card : public QWidget
     Q_OBJECT
 
 public:
-    explicit Widget_Card(QWidget *parent = nullptr, E_CARD card = E_CARD::facisteLaw);
+    explicit Widget_Card(QWidget *parent = nullptr, E_CARD card = E_CARD::deathEatersLaw, bool* antispoil = nullptr);
     ~Widget_Card();
 
 public:
@@ -23,9 +24,13 @@ public:
 
 protected:
     void paintEvent(QPaintEvent*);
+    void enterEvent(QEvent*);
+    void leaveEvent(QEvent*);
 
 private:
     E_CARD mCard;
+    bool* mAntiSpoil;
+    bool mHover;
 
 private:
     Ui::Widget_Card *ui;

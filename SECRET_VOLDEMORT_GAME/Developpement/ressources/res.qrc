@@ -82,6 +82,7 @@
         <file>start.png</file>
         <file>switch.png</file>
         <file>switch_p.png</file>
+        <file>switch_h.png</file>
     </qresource>
     <qresource prefix="/musics">
         <file>music_0.mp3</file>
