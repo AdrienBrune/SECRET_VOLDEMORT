@@ -656,7 +656,10 @@ void Server_CTR::refreshGameStatusDisplay()
     for(E_CARD card : mGame.pile)
     {
         mBoardStatusDisplay.pile.prepend(new Widget_Card(this, card, &mAntiSpoil));
-        ui->layoutPile->addWidget(mBoardStatusDisplay.pile.first());
+    }
+    for(int i = 0; i < mGame.pile.size(); i++)
+    {
+        ui->layoutPile->addWidget(mBoardStatusDisplay.pile[i]);
     }
 
     mBoardStatusDisplay.boardMangemort = new Widget_Board(this, &mGame, Widget_Board::E_BOARD_TYPE::Mangemort);
