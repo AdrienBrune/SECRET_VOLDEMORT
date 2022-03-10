@@ -2,7 +2,7 @@
 #include "ui_server_ctr.h"
 
 //#define DEBUG
-
+ 
 char version[15+1];
 
 QString gameStatusLabel[] = {
