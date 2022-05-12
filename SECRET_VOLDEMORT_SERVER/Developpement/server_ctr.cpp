@@ -57,6 +57,8 @@ Server_CTR::Server_CTR(QWidget *parent):
 
     ui->version->setText(version);
 
+    ui->buttonStartTurnWithInputs->setEnabled(false);
+    ui->buttonRestartVote->setEnabled(false);
 }
 
 Server_CTR::~Server_CTR()
@@ -528,9 +530,11 @@ void Server_CTR::refreshPlayerStatus(S_MESSAGE MSG)
     {
         if(mGame.players[i].identifier == MSG.identifier)
         {
-            QTcpSocket* save = mGame.players[i].socket;
+            QTcpSocket* socket = mGame.players[i].socket;
+            QTimer* ackTimeout = mGame.players[i].ackTimeout;
             mGame.players[i] = MSG.gameStatus.players[MSG.identifier];
-            mGame.players[i].socket = save;
+            mGame.players[i].socket = socket;
+            mGame.players[i].ackTimeout = ackTimeout;
         }
     }
 }
@@ -747,8 +751,14 @@ void Server_CTR::onAddPlayer(QTcpSocket* socket)
     if(player.identifier == E_IDENTIFIER::ID_none)
     {
         onPrint("Un joueur a tenté de se connecter mais la partie est déjà pleine");
+        socket->close();
+        socket->deleteLater();
         return;
     }
+
+    player.ackTimeout = new QTimer(this);
+    player.ackTimeout->setSingleShot(true);
+    connect(player.ackTimeout, SIGNAL(timeout()), mTCP_API, SLOT(ackTimeout()));
 
     mGame.players.append(player);
     mTurnStateSaveMSG.players = mGame.players;
@@ -802,6 +812,10 @@ void Server_CTR::onRemovePlayer(QTcpSocket* socket)
     }
 
     onPrint(mGame.players[identifier].name + " a quitté la partie");
+    mGame.players[identifier].socket->close();
+    mGame.players[identifier].socket->deleteLater();
+    if(mGame.players[identifier].ackTimeout)
+        delete mGame.players[identifier].ackTimeout;
     mGame.players.removeAt(identifier);
 
     refreshPlayerIdentifier();
@@ -846,7 +860,7 @@ void Server_CTR::on_buttonRestartTurn_clicked()
     }
 
     bool MinisterFound = false;
-    for(const S_PLAYER & player : mGame.players)
+    for(const S_PLAYER & player : qAsConst(mGame.players))
     {
         if(player.electionRole == E_ELECTION_ROLE::minister)
             MinisterFound = true;
@@ -897,6 +911,17 @@ void Server_CTR::on_buttonExpertMode_stateChanged(int toggle)
 {
     mExpertMode = toggle;
     refreshGameStatusDisplay();
+
+    if(mExpertMode)
+    {
+        ui->buttonStartTurnWithInputs->setEnabled(true);
+        ui->buttonRestartVote->setEnabled(true);
+    }
+    else
+    {
+        ui->buttonStartTurnWithInputs->setEnabled(false);
+        ui->buttonRestartVote->setEnabled(false);
+    }
 }
 
 void Server_CTR::paintEvent(QPaintEvent*)
@@ -906,4 +931,16 @@ void Server_CTR::paintEvent(QPaintEvent*)
 
     painter.setBrush(QBrush(COLOR_DARK));
     painter.drawRect(QRect(0,0,width(),height()));
+}
+
+void Server_CTR::on_buttonRestartVote_clicked()
+{
+    // Reset player votes.
+    for(int i = 0; i < mGame.players.size(); i++)
+    {
+        mGame.players[i].vote = E_VOTE::blank;
+    }
+
+    mTCP_API->setCommand(CMD_TO_PLAYER_START_VOTE);
+    mTCP_API->send_MSG(mGame);
 }

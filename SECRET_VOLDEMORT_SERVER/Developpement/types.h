@@ -6,8 +6,10 @@
 #include <QDataStream>
 #include <stdio.h>
 #include <QDebug>
+#include <QTimer>
 
 #define LOG
+#define MSG_TIMEOUT 2000
 
 typedef enum
 {
@@ -130,6 +132,7 @@ typedef struct
     E_ELECTION_ROLE electionRole;
     E_VOTE vote;
     E_POWER power;
+    QTimer * ackTimeout;
 
 }S_PLAYER;
 
@@ -305,6 +308,7 @@ inline QDataStream & operator>>(QDataStream & stream, S_MESSAGE & MSG)
 #define CMD_TO_PLAYER_PLAYER_JOINED         26
 #define CMD_TO_PLAYER_PLAYER_LEFT_GAME      27
 
+#define CMD_ACKNOLEDGE                      50
 
 // Resource paths.
 
@@ -340,6 +344,10 @@ inline QDataStream & operator>>(QDataStream & stream, S_MESSAGE & MSG)
 #define COLOR_DARK                  QColor(24,24,24)
 #define COLOR_LIGHT_DARK            QColor(40,40,40)
 
+#define STR_SEND    " ===> "
+#define STR_RECEIVE " <=== "
+#define STR_SPACER  "      "
+#define STR_ERR     "Error : "
 
 /*
 QDebug operator<<(QDebug debug, const S_PLAYER & player)

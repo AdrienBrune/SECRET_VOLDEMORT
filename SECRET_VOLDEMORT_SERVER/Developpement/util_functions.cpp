@@ -3,7 +3,7 @@
 
 E_IDENTIFIER getPlayerIdentifier(QList<S_PLAYER> players, QTcpSocket* socket)
 {
-    for(S_PLAYER player : players)
+    for(const S_PLAYER &player : players)
     {
         if(socket == player.socket)
         {
@@ -582,67 +582,67 @@ QString getCommandString(quint8 command)
     switch(command)
     {
         case CMD_TO_PLAYER_START_GAME:
-            return "Js < commencer la partie";
+            return "commencer la partie";
 
         case CMD_TO_SERVER_START_NEW_TURN:
-            return "S < commencer un nouveau tour";
+            return "commencer un nouveau tour";
 
         case CMD_TO_PLAYER_ELECT_CHANCELOR:
-            return "Js < commencer l'élection du Chancelier";
+            return "commencer l'élection du Chancelier";
 
         case CMD_TO_SERVER_GIVE_CHANCELOR:
-            return "S < choix du Chancelier";
+            return "choix du Chancelier";
 
         case CMD_TO_PLAYER_START_VOTE:
-            return "Js < commencer le vote du Chancelier";
+            return "commencer le vote du Chancelier";
 
         case CMD_TO_SERVER_PLAYER_VOTED:
-            return "S < un joueur a voté";
+            return "un joueur a voté";
 
         case CMD_TO_PLAYER_PLAYER_VOTED:
-            return "Js < un joueur a voté";
+            return "un joueur a voté";
 
         case CMD_TO_PLAYER_PRESIDENT_DRAW:
-            return "Js < le Président doit piocher trois lois";
+            return "le Président doit piocher trois lois";
 
         case CMD_TO_SERVER_PRESIDENT_DISCARDED:
-            return "S < le Président a défaussé un loi";
+            return "le Président a défaussé un loi";
 
         case CMD_TO_PLAYER_CHANCELOR_DISCARD:
-            return "Js < le Chancelier doit défausser une loi";
+            return "le Chancelier doit défausser une loi";
 
         case CMD_TO_SERVER_CHANCELOR_DISCARDED:
-            return "S < le Chancelier a défaussé une loi";
+            return "le Chancelier a défaussé une loi";
 
         case CMD_TO_PLAYER_PUT_LAW_ON_BOARD:
-            return "Js < une loi a été votée";
+            return "une loi a été votée";
 
         case CMD_TO_SERVER_END_TURN_OK:
-            return "S < fin du tour";
+            return "fin du tour";
 
         case CMD_TO_SERVER_NEW_PRESIDENT:
-            return "S < choix du prochain Président";
+            return "choix du prochain Président";
 
         case CMD_TO_SERVER_KILL_PLAYER:
-            return "S < execution d'un joueur";
+            return "execution d'un joueur";
 
         case CMD_TO_PLAYER_END_GAME:
-            return "Js < fin de la partie";
+            return "fin de la partie";
 
         case CMD_TO_SERVER_CHANGE_NAME:
-            return "S < changement de nom d'un joueur";
+            return "changement de nom d'un joueur";
 
         case CMD_TO_PLAYER_INIT_COMMUNICATION:
-            return "Js < initialisation de la communication avec le serveur";
+            return "initialisation de la communication avec le serveur";
 
         case CMD_TO_PLAYER_SET_NEW_IDENTIFIER:
-            return "Js < changement de l'identifiant";
+            return "changement de l'identifiant";
 
         case CMD_TO_PLAYER_NEW_CONNECTION:
-            return "Js < nouvelle connexion";
+            return "nouvelle connexion";
 
         case CMD_TO_PLAYER_PLAYER_JOINED:
-            return "Js < join la partie";
+            return "join la partie";
 
         default:
             return "commande non renseignée";

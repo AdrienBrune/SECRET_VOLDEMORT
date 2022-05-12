@@ -45,7 +45,7 @@ Controller::Controller(QMainWindow *parent):
     wBoard = new Widget_Gameboard(this, &mMSG, mHandlerVotes.votes);
     ui->layout->addWidget(wBoard);
     wMenu = new Dialog_Menu();
-    mTCP_API = new TCP_API(this, wMenu->getName(), wMenu->getIp());
+    mTCP_API = new TCP_API(this, &mMSG, wMenu->getName(), wMenu->getIp());
     wScreenSeePlayerRole = new Widget_ScreenCheckRole(this, &mMSG);
     wScreenSeeLawCards = new Widget_ScreenLawCards(this, &mMSG);
     wScreenSeePowerUnlocked = new Widget_ScreenPowerUnlocked(this);

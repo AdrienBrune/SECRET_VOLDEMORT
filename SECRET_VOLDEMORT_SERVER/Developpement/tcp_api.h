@@ -27,6 +27,9 @@ private slots:
     void receive_MSG();
     void socketEvent(QAbstractSocket::SocketState socketState);
 
+public slots:
+    void ackTimeout();
+
 public:
     void setCommand(quint8 command);
 

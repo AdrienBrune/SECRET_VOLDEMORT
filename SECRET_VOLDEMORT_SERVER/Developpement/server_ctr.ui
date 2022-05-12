@@ -93,7 +93,7 @@ QTabWidget::tab_details{
 }</string>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_details">
        <attribute name="title">
@@ -296,13 +296,13 @@ QToolBox QScrollBar::handle:horizontal {
 QToolBox QScrollBar::add-line:horizontal {
     background: none;
     width: 0px;
-	heigth: 0px;
+	height: 0px;
 }
 
 QToolBox QScrollBar::sub-line:horizontal {
     background: none;
     width: 0px;
-	heigth: 0px;
+	height: 0px;
 }
 
 QToolBox QScrollBar:left-arrow:horizontal, QToolBox QScrollBar::right-arrow:horizontal {
@@ -567,6 +567,36 @@ QPushButton::hover{
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QPushButton" name="buttonRestartVote">
+            <property name="font">
+             <font>
+              <family>High Tower Text</family>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton{
+	background-color : rgba(250,250,250,20);
+	color : #CCCCCC;
+	padding-left : 20px;
+	padding-right : 20px;
+	padding-top : 5px;
+	padding-bottom : 5px;
+	margin-left:50px;
+	margin-right:50px;
+}
+
+QPushButton::hover{
+	background-color : rgba(250,250,250,40);
+	color:white;
+}</string>
+            </property>
+            <property name="text">
+             <string>Recommencer le vote</string>
+            </property>
+           </widget>
+          </item>
           <item alignment="Qt::AlignHCenter">
            <widget class="QCheckBox" name="buttonExpertMode">
             <property name="sizePolicy">
@@ -574,6 +604,12 @@ QPushButton::hover{
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <family>High Tower Text</family>
+              <pointsize>10</pointsize>
+             </font>
             </property>
             <property name="styleSheet">
              <string notr="true">QCheckBox{

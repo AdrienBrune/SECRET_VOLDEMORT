@@ -5,6 +5,8 @@
 #include <QTcpSocket>
 #include <QDataStream>
 
+#define MSG_TIMEOUT 2000
+
 extern QString g_RoleNames[];
 
 // States.
@@ -57,6 +59,8 @@ extern QString g_RoleNames[];
 #define CMD_TO_SERVER_JOIN_GAME             25
 #define CMD_TO_PLAYER_PLAYER_JOINED         26
 #define CMD_TO_PLAYER_PLAYER_LEFT_GAME      27
+
+#define CMD_ACKNOLEDGE                      50
 
 // Resource paths.
 

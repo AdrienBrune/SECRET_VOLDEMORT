@@ -2,14 +2,20 @@
 #include "dialog_menu.h"
 #include <QTimer>
 
-TCP_API::TCP_API(QObject *parent, QString* name, QString* ip):
+TCP_API::TCP_API(QObject *parent, S_MESSAGE * msg, QString* name, QString* ip):
     QObject(parent),
+    mMSG(msg),
     mName(name),
     mIp(ip)
 {
     mSocket = new QTcpSocket(this);
+    mSocket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
     connect(mSocket,SIGNAL(connected()),this,SLOT(connection()));
     connect(mSocket, SIGNAL(readyRead()), this, SLOT(receive_MSG()));
+
+    mAckTimeout = new QTimer(this);
+    mAckTimeout->setSingleShot(true);
+    connect(mAckTimeout, SIGNAL(timeout()), this, SLOT(ackTimeout()));
 }
 
 void TCP_API::connection()
@@ -24,6 +30,7 @@ void TCP_API::connectToServer()
         mSocket->close();
 
         mSocket = new QTcpSocket(this);
+        mSocket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
         connect(mSocket, SIGNAL(connected()), this, SLOT(connection()));
         connect(mSocket, SIGNAL(disconnected()), SLOT(disconnected()));
         connect(mSocket, SIGNAL(readyRead()), this, SLOT(receive_MSG()));
@@ -52,26 +59,66 @@ void TCP_API::send_MSG(S_MESSAGE MSG)
     // Name update if necessary.
     MSG.gameStatus.players[MSG.identifier].name = QString(*mName);
 
+    if(MSG.command != CMD_ACKNOLEDGE)
+    {
+        mLastCommand = MSG.command;
+        mAckTimeout->start(MSG_TIMEOUT);
+    }
     QDataStream stream(mSocket);
     stream << MSG;
 }
 
 void TCP_API::receive_MSG()
 {
+    uint8_t commandTmp;
     S_MESSAGE MSG;
     QDataStream stream(mSocket);
 
     // If messages(MSG) are packed, the last one is kept.
     while(mSocket->bytesAvailable() != 0)
+    {
         stream >> MSG;
 
-    // First MSG comming from server.
-    if(MSG.command == CMD_TO_PLAYER_INIT_COMMUNICATION)
-    {
-        MSG.gameStatus.players[MSG.identifier].name = QString(*mName);
-        MSG.command = CMD_TO_SERVER_CHANGE_NAME;
+        /* Ignore acknowledge messages */
+        if(MSG.command == CMD_ACKNOLEDGE)
+        {
+            mAckTimeout->stop();
+            continue;
+        }
+
+        /* Send acknoledge message */
+        commandTmp = MSG.command;
+        MSG.command = CMD_ACKNOLEDGE;
         send_MSG(MSG);
+        MSG.command = commandTmp;
+
+        /* First MSG comming from server */
+        if(MSG.command == CMD_TO_PLAYER_INIT_COMMUNICATION)
+        {
+            MSG.gameStatus.players[MSG.identifier].name = QString(*mName);
+            MSG.command = CMD_TO_SERVER_CHANGE_NAME;
+            send_MSG(MSG);
+        }
+
+        emit sig_MSG_received(MSG);
+    }
+}
+
+void TCP_API::ackTimeout()
+{
+    uint8_t tmpCmd;
+
+    if(mSocket->state() == QAbstractSocket::UnconnectedState)
+    {
+        mAckTimeout->stop();
+        return;
     }
 
-    emit sig_MSG_received(MSG);
+    qDebug() << "ACK timeout !!";
+
+    mAckTimeout->stop();
+    tmpCmd = mMSG->command;
+    mMSG->command = mLastCommand;
+    send_MSG(*mMSG);
+    mMSG->command = tmpCmd;
 }

@@ -77,6 +77,7 @@ private slots:
     void on_buttonStartTurnWithInputs_clicked();
     void on_buttonAntiSpoil_stateChanged(int arg1);
     void on_buttonExpertMode_stateChanged(int arg1);
+    void on_buttonRestartVote_clicked();
 
 protected:
     void paintEvent(QPaintEvent*);
